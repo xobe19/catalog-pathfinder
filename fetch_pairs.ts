@@ -1,52 +1,38 @@
-import { Contract, JsonRpcProvider } from "ethers";
 import fs from "fs";
-const ANKR_URL = "https://rpc.ankr.com/eth/d09580d880b1fdb84b26c8f3421403c157760bfbc46b590476ffdb6b42b6f490"; // Replace APIKEY with your Ankr API key
-
-const provider = new JsonRpcProvider(ANKR_URL); 
-
-
-const uniswapV2FactoryABI = [{"inputs":[{"internalType":"address","name":"_feeToSetter","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token0","type":"address"},{"indexed":true,"internalType":"address","name":"token1","type":"address"},{"indexed":false,"internalType":"address","name":"pair","type":"address"},{"indexed":false,"internalType":"uint256","name":"","type":"uint256"}],"name":"PairCreated","type":"event"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"allPairs","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allPairsLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"}],"name":"createPair","outputs":[{"internalType":"address","name":"pair","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"feeTo","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"feeToSetter","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"getPair","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_feeTo","type":"address"}],"name":"setFeeTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_feeToSetter","type":"address"}],"name":"setFeeToSetter","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
-const uniswapV2FactoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-const uniswapV2FactoryContract = new Contract(uniswapV2FactoryAddress, uniswapV2FactoryABI, provider);
-
+import { uniswapV2FactoryContract } from "./rpc_setup";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function promiseCreator() {
-    let lastPromiseCreated = -1;
-    
-    return function  getNextPromiseBatch(batch_size: number) {
-        let batch = [];
-        while(batch_size-->0) {
-            batch.push(uniswapV2FactoryContract.allPairs(++lastPromiseCreated));
-        }
-        return batch;
+  let lastPromiseCreated = -1;
+
+  return function getNextPromiseBatch(batch_size: number) {
+    let batch = [];
+    while (batch_size-- > 0) {
+      batch.push(uniswapV2FactoryContract.allPairs(++lastPromiseCreated));
     }
+    return batch;
+  };
 }
 
-(async function() {
-const num_pairs = await uniswapV2FactoryContract.allPairsLength();
-console.log(num_pairs);
+(async function () {
+  const num_pairs = await uniswapV2FactoryContract.allPairsLength();
+  console.log(num_pairs);
 
-// fetch the first 1000 pairs
-// 67 batches
+  // fetch the first 1000 pairs
+  // 67 batches
 
-let pairAddresses: string[] = [];
+  let pairAddresses: string[] = [];
 
-let getNextPromiseBatch = promiseCreator();
+  let getNextPromiseBatch = promiseCreator();
 
-for(let i = 0; i < 67; i++) {
+  for (let i = 0; i < 67; i++) {
     console.log(i);
-    let values = await Promise.all(getNextPromiseBatch(15))
-    await sleep(1000);    
-    pairAddresses.push(...values as string[]);
-}
+    let values = await Promise.all(getNextPromiseBatch(15));
+    await sleep(1000);
+    pairAddresses.push(...(values as string[]));
+  }
 
-
-for(let pair of pairAddresses) {
-fs.appendFileSync("./pairs.txt", pair + "\n");
-}
-
-
-
-})()
-
+  for (let pair of pairAddresses) {
+    fs.appendFileSync("./pairs.txt", pair + "\n");
+  }
+})();
