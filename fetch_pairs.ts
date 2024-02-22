@@ -1,5 +1,5 @@
 import { Contract, JsonRpcProvider } from "ethers";
-(async function() {
+import fs from "fs";
 const ANKR_URL = "https://rpc.ankr.com/eth/d09580d880b1fdb84b26c8f3421403c157760bfbc46b590476ffdb6b42b6f490"; // Replace APIKEY with your Ankr API key
 
 const provider = new JsonRpcProvider(ANKR_URL); 
@@ -9,7 +9,44 @@ const uniswapV2FactoryABI = [{"inputs":[{"internalType":"address","name":"_feeTo
 const uniswapV2FactoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 const uniswapV2FactoryContract = new Contract(uniswapV2FactoryAddress, uniswapV2FactoryABI, provider);
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function promiseCreator() {
+    let lastPromiseCreated = -1;
+    
+    return function  getNextPromiseBatch(batch_size: number) {
+        let batch = [];
+        while(batch_size-->0) {
+            batch.push(uniswapV2FactoryContract.allPairs(++lastPromiseCreated));
+        }
+        return batch;
+    }
+}
+
+(async function() {
 const num_pairs = await uniswapV2FactoryContract.allPairsLength();
 console.log(num_pairs);
+
+// fetch the first 1000 pairs
+// 67 batches
+
+let pairAddresses: string[] = [];
+
+let getNextPromiseBatch = promiseCreator();
+
+for(let i = 0; i < 67; i++) {
+    console.log(i);
+    let values = await Promise.all(getNextPromiseBatch(15))
+    await sleep(1000);    
+    pairAddresses.push(...values as string[]);
+}
+
+
+for(let pair of pairAddresses) {
+fs.appendFileSync("./pairs.txt", pair + "\n");
+}
+
+
+
 })()
 
