@@ -46,15 +46,19 @@ function findPath(
         }
       }
     }
-    return maxOut[outTokenAddress];
+    return prev;
   }
 }
 
 // vlink and usdc
-console.log(
-  findPath(
-    "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    BigInt(10000)
-  )
+
+let prev = findPath(
+  "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+  BigInt(10000)
 );
+let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
+while (curr != "") {
+  console.log(curr);
+  curr = prev![curr];
+}

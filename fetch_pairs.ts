@@ -21,18 +21,14 @@ function promiseCreator() {
   // fetch the first 1000 pairs
   // 67 batches
 
-  let pairAddresses: string[] = [];
-
   let getNextPromiseBatch = promiseCreator();
 
-  for (let i = 0; i < 67; i++) {
+  for (let i = 0; i < 3400; i++) {
     console.log(i);
     let values = await Promise.all(getNextPromiseBatch(15));
     await sleep(1000);
-    pairAddresses.push(...(values as string[]));
-  }
-
-  for (let pair of pairAddresses) {
-    fs.appendFileSync("./pairs.txt", pair + "\n");
+    for (let val of values) {
+      fs.appendFileSync("./pairs.txt", val + "\n");
+    }
   }
 })();
