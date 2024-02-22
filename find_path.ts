@@ -45,6 +45,21 @@ function findPath(
           prev[token1_addr] = token0_addr;
         }
       }
+
+      //token 1 to token 0
+
+      if (maxOut[token1_addr] !== undefined) {
+        let qty_token1 = maxOut[token1_addr];
+        let prod = res_token0 * res_token1;
+        let qty_token0 = res_token0 - prod / (res_token1 + qty_token1);
+        if (
+          maxOut[token0_addr] === undefined ||
+          maxOut[token0_addr] < qty_token0
+        ) {
+          maxOut[token0_addr] = qty_token1;
+          prev[token0_addr] = token1_addr;
+        }
+      }
     }
     return prev;
   }
