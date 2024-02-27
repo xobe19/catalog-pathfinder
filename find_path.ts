@@ -53,10 +53,11 @@ function findPath(
         let prod = res_token0 * res_token1;
         let qty_token0 = res_token0 - prod / (res_token1 + qty_token1);
         if (
-          maxOut[token0_addr] === undefined ||
-          maxOut[token0_addr] < qty_token0
+          (maxOut[token0_addr] === undefined ||
+            maxOut[token0_addr] < qty_token0) &&
+          prev[token1_addr] != token0_addr 
         ) {
-          maxOut[token0_addr] = qty_token1;
+          maxOut[token0_addr] = qty_token0;
           prev[token0_addr] = token1_addr;
         }
       }

@@ -563,3 +563,7 @@ export const uniswapV2PairABI = [
     type: "function",
   },
 ];
+
+export const symbolABI = [{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}];
+
+export const upgradableContractABI = [{"constant":true,"inputs":[],"name":"implementation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
