@@ -1,6 +1,6 @@
 export interface PairToken {
   address: string;
-  quantity: BigInt;
+  quantity: string;
   decimal: number;
   symbol: string;
 }
