@@ -10,3 +10,9 @@ export interface Pair {
   token0: PairToken;
   token1: PairToken;
 }
+
+export interface Resolver {
+  target: string;
+  allowFailure: boolean;
+  callData: string;
+}
