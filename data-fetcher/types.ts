@@ -1,0 +1,12 @@
+export interface PairToken {
+  address: string;
+  quantity: BigInt;
+  decimal: number;
+  symbol: string;
+}
+
+export interface Pair {
+  address: string;
+  token0: PairToken;
+  token1: PairToken;
+}
