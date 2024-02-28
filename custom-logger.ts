@@ -1,13 +1,28 @@
-import ora from "ora";
+import logUpdate from "log-update";
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export async function custom_logger(
+  tableA: string[],
+  tableB: string[],
+  tableC: string[]
+) {
+  while (true) {
+    const tableData = tableA.map((pair, index) => ({
+      pairs: pair,
+      resa: tableB[index],
+      resb: tableC[index],
+    }));
 
-await sleep(1000);
+    const tableString = `| PAIRS      | RES A  | RES B   |
+|------------|--------|---------|
+${tableData
+  .map(
+    (data) =>
+      `| ${data.pairs.padEnd(10)} | ${data.resa.padEnd(6)} | ${data.resb.padEnd(
+        7
+      )} |`
+  )
+  .join("\n")}`;
 
-const data = [1, 3, 4, 5, 6, 6];
-const spinner = ora("Loading unicorns").start();
-
-setTimeout(() => {
-  spinner.color = "yellow";
-  spinner.text = "Loading rainbows";
-}, 1000);
+    logUpdate(tableString);
+  }
+}

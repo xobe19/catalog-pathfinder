@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "ethers": "^6.11.1",
+    "log-update": "^6.0.0",
     "ora": "^8.0.1",
     "redis": "^4.6.13"
   },
