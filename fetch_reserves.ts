@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
 import fs from "fs";
-import { provider, uniswapV2PairABI } from "./rpc_setup";
+import { provider, uniswapV2PairABI } from "./rpc_setup.js";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function getReserves(pairAddresses: string[]) {

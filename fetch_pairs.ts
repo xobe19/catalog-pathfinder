@@ -1,5 +1,5 @@
 import fs from "fs";
-import { uniswapV2FactoryContract } from "./rpc_setup";
+import { uniswapV2FactoryContract } from "./rpc_setup.js";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function promiseCreator() {

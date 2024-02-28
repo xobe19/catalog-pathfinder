@@ -1,8 +1,8 @@
 import fs from "fs";
 import { Contract } from "ethers";
-import { TOP_PAIRS } from "./constant";
-import { provider, upgradableContractABI } from "./rpc_setup";
-import { Pair } from "./data-fetcher/types";
+import { TOP_PAIRS } from "./constant.js";
+import { provider, upgradableContractABI } from "./rpc_setup.js";
+import { Pair } from "./data-fetcher/types.js";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const DecimalAbi = [
