@@ -16,3 +16,8 @@ export interface Resolver {
   allowFailure: boolean;
   callData: string;
 }
+
+export interface TokenDetailsReponse {
+  decimal: number;
+  symbol: string;
+}

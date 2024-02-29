@@ -1,6 +1,7 @@
 /* https://github.com/mds1/multicall/blob/a53ad011e302d8162f185d3393666f912767af5c/examples/typescript/constants.ts */
 
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
+export const UNISWAP_V2_ADDRESS = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 
 // Ethers
 export const MULTICALL_ABI_ETHERS = [

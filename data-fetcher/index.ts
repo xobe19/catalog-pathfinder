@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { Contract, Interface, JsonRpcProvider } from "ethers";
 import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "./constants";
-import { Pair, Resolver } from "./types";
+import { Resolver } from "./types";
 dotenv.config();
 
 // Setup the provider
@@ -11,13 +11,13 @@ if (!MAINNET_RPC_URL)
 const provider = new JsonRpcProvider(MAINNET_RPC_URL);
 
 // Get Multicall contract instance.
-const multicall = new Contract(
+export const multicall = new Contract(
   MULTICALL_ADDRESS,
   MULTICALL_ABI_ETHERS,
   provider
 );
 
-function prepareCall(
+export function prepareCall(
   contractAddress: string,
   functionName: string,
   interfaceAbi: string
@@ -51,75 +51,97 @@ async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   );
 }
 
-async function getTokenDetails(tokenAddress: string) {
+export async function getTokenDetails(tokenA: string, tokenB: string) {
   const calls = [
     prepareCall(
-      tokenAddress,
+      tokenA,
+      "symbol",
+      "function symbol() public constant returns (string symbol)"
+    ),
+    prepareCall(
+      tokenA,
       "decimals",
       "function decimals() public constant returns (uint8 decimals)"
     ),
     prepareCall(
-      tokenAddress,
+      tokenB,
       "symbol",
       "function symbol() public constant returns (string symbol)"
     ),
-  ];
-
-  const [decimals, symbol] = await executeCalls(calls);
-  return {
-    decimal: decimals[0],
-    symbol: symbol[0],
-  };
-}
-
-async function getPairDetails(pairAddress: string) {
-  const calls = [
     prepareCall(
-      pairAddress,
-      "getReserves",
-      "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)"
-    ),
-    prepareCall(
-      pairAddress,
-      "token0",
-      "function token0() external view returns (address)"
-    ),
-    prepareCall(
-      pairAddress,
-      "token1",
-      "function token1() external view returns (address)"
+      tokenB,
+      "decimals",
+      "function decimals() public constant returns (uint8 decimals)"
     ),
   ];
 
-  const [reserves, token0, token1] = await executeCalls(calls);
-
-  const token0Address = token0[0];
-  const token1Address = token1[0];
-
-  const token0Details = await getTokenDetails(token0Address);
-  const token1Details = await getTokenDetails(token1Address);
-
-  const ret: Pair = {
-    address: pairAddress,
-    token0: {
-      address: token0Address,
-      quantity: reserves[0],
-      ...token0Details,
+  const [symbolA, decimalA, symbolB, deciamalB] = await executeCalls(calls);
+  return [
+    {
+      decimal_A: Number(decimalA),
+      symbol_A: symbolA,
     },
-    token1: {
-      address: token1Address,
-      quantity: reserves[1],
-      ...token1Details,
+    {
+      decimal_B: Number(deciamalB),
+      symbol_B: symbolB,
     },
-  };
-  return ret;
+  ];
 }
+
+// export async function getPairDetails(pairAddress: string) {
+//   const calls = [
+//     prepareCall(
+//       pairAddress,
+//       "getReserves",
+//       "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)"
+//     ),
+//     prepareCall(
+//       pairAddress,
+//       "token0",
+//       "function token0() external view returns (address)"
+//     ),
+//     prepareCall(
+//       pairAddress,
+//       "token1",
+//       "function token1() external view returns (address)"
+//     ),
+//   ];
+
+//   const [reserves, token0, token1] = await executeCalls(calls);
+
+//   const token0Address = token0[0];
+//   const token1Address = token1[0];
+
+//   const token0Details = await getTokenDetails(token0Address);
+//   const token1Details = await getTokenDetails(token1Address);
+
+//   const ret: Pair = {
+//     address: pairAddress,
+//     token0: {
+//       address: token0Address,
+//       quantity: reserves[0],
+//       ...token0Details,
+//     },
+//     token1: {
+//       address: token1Address,
+//       quantity: reserves[1],
+//       ...token1Details,
+//     },
+//   };
+//   return ret;
+// }
 
 async function main() {
-  const pair = await getPairDetails(
-    "0x3fd4Cf9303c4BC9E13772618828712C8EaC7Dd2F"
+  // const pair = await getPairDetails(
+  //   "0x3fd4Cf9303c4BC9E13772618828712C8EaC7Dd2F"
+  // );
+
+  const token = await getTokenDetails(
+    "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C",
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
   );
-  console.log(pair);
+
+  console.log(token); // console.log(pair);
 }
 
-main();
+// main();

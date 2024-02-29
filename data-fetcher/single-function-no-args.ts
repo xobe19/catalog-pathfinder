@@ -17,7 +17,7 @@ const multicall = new Contract(
   provider
 );
 
-function prepareCall(
+export function prepareCall(
   contractAddress: string,
   functionName: string,
   interfaceAbi: string,
@@ -40,7 +40,7 @@ function prepareCall(
   };
 }
 
-async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
+export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   const resolverCalls = calls.map((call) => call.resolver);
 
   type Aggregate3Response = { success: boolean; returnData: string };
@@ -52,22 +52,22 @@ async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   );
 }
 
-async function main() {
-  const contractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+// async function main() {
+//   const contractAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 
-  const calls = [];
-  for (let i = 0; i < 100; i++) {
-    calls.push(
-      prepareCall(
-        contractAddress,
-        "allPairs",
-        "function allPairs(uint) external view returns (address pair)",
-        [BigInt(i)]
-      )
-    );
-  }
-  const result = await executeCalls(calls);
-  console.log(result);
-}
+//   const calls = [];
+//   for (let i = 0; i < 1000; i++) {
+//     calls.push(
+//       prepareCall(
+//         contractAddress,
+//         "allPairs",
+//         "function allPairs(uint) external view returns (address pair)",
+//         [BigInt(i)]
+//       )
+//     );
+//   }
+//   const result = await executeCalls(calls);
+//   console.log(result);
+// }
 
-main();
+// main();
