@@ -1,7 +1,7 @@
-import { parse } from "csv-parse";
 import fs from "fs";
 import { prepareCall } from ".";
 import { executeCalls } from "./single-function-no-args";
+import { PairSchemaRef } from "./mongo-client";
 
 async function getPairDetails(pairAddress: string) {
   const calls = [
@@ -27,86 +27,76 @@ async function getPairDetails(pairAddress: string) {
   const token0Address = token0[0];
   const token1Address = token1[0];
 
-  let pairsInfo = await getTokenDetails(token0Address, token1Address);
+  // let pairsInfo = await getTokenDetails(token0Address, token1Address, false);
 
   const ret = {
     address: pairAddress,
     token0: {
       address: token0Address,
       quantity: reserves[0],
-
-      decimal: Number(pairsInfo.decimalA),
+      // decimal: Number(pairsInfo.decimalA),
     },
     token1: {
       address: token1Address,
       quantity: reserves[1],
-      decimal: Number(pairsInfo.decimalB),
+      // decimal: Number(pairsInfo.decimalB),
     },
   };
 
   return ret;
 }
 
-async function getTokenDetails(tokenA: string, tokenB: string) {
-  const calls = [
-    prepareCall(
-      tokenA,
-      "decimals",
-      "function decimals() public constant returns (uint8 decimals)"
-    ),
-    prepareCall(
-      tokenB,
-      "decimals",
-      "function decimals() public constant returns (uint8 decimals)"
-    ),
-  ];
+async function getTokenDetails(
+  tokenA: string,
+  tokenB: string,
+  is16bits?: boolean
+) {
+  try {
+    const deciamlCall = is16bits
+      ? "function decimals() public constant returns (uint16 decimals)"
+      : "function decimals() public constant returns (uint8 decimals)";
 
-  var result = await executeCalls(calls);
+    const calls = [
+      prepareCall(tokenA, "decimals", deciamlCall),
+      prepareCall(tokenB, "decimals", deciamlCall),
+    ];
 
-  const decimalA = result[0] ? result[0] : -1;
-  const decimalB = result[1] ? result[1] : -1;
+    var result = await executeCalls(calls);
 
-  return {
-    decimalA: decimalA,
-    decimalB: decimalB,
-  };
+    const decimalA = result[0] ? result[0] : -1;
+    const decimalB = result[1] ? result[1] : -1;
+
+    return {
+      decimalA: decimalA,
+      decimalB: decimalB,
+    };
+  } catch (error) {
+    getTokenDetails(tokenA, tokenB, true);
+  }
 }
 
 async function main() {
   try {
-    const records: any = [];
+    const fileRef = fs.readFileSync("./addresses.csv", "utf-8");
+    const pairsAddress = fileRef.split("\n");
 
-    const parser = parse({
-      delimiter: ",",
-    });
-
-    fs.createReadStream("./addresses.csv").pipe(parser);
-
-    let lines = 1;
-    const endLines = 309146;
-
-    const calls: any = [];
-
-    parser.on("readable", function () {
-      let record;
-      while ((record = parser.read()) !== null) {
-        lines++;
-        const s = record.toString();
-
+    function createBatch(start: number, end: number) {
+      const calls = [];
+      for (let i = start; i < end; i++) {
+        calls.push(getPairDetails(pairsAddress[i]));
       }
-    })
-    parser.on("readable", function () {
-        // records.push(s);
-        // Promise.resolve(getPairDetails(s))
-        // calls.push(getPairDetails(s));
-        // if (lines === 100) {
-        //   Promise.all(calls).then((res) => {
-        //     console.log(res);
-        //   });
-          break;
-        }
-      }
-    });
+      return calls;
+    }
+
+    const totalReqs = pairsAddress.length;
+    for (let i = 0; i < totalReqs; i += 1000) {
+      const start = i;
+      const end = Math.min(i + 1000, totalReqs);
+      const res = await Promise.all(createBatch(start, end));
+      await PairSchemaRef.insertMany(res);
+      console.log("batch pushed to db", i);
+      i++;
+    }
   } catch (error) {
     console.log(error);
   }
