@@ -1,8 +1,12 @@
-export interface PairToken {
+export interface Token {
   address: string;
-  quantity: string;
   decimal: number;
   symbol: string;
+  name?: string;
+}
+
+export interface PairToken extends Token {
+  quantity: BigInt;
 }
 
 export interface Pair {

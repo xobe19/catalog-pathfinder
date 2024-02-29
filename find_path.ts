@@ -1,5 +1,11 @@
-import { Pair, PairToken } from "./data-fetcher/types";
+import { Pair as PairT, PairToken as PairTokenT } from "./data-fetcher/types";
 import reserves_imp from "./top_pairs.json";
+
+type PairToken = Omit<PairTokenT, "quantity"> & { quantity: string };
+type Pair = Omit<PairT, "token0" | "token1"> & {
+  token0: PairToken;
+  token1: PairToken;
+};
 
 const gooch = "0x6d3d490964205c8bc8ded39e48e88e8fde45b41f";
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
@@ -119,7 +125,7 @@ function findPath(
           q1 = tmp;
         }
         let new_qty = getOut(q1, q2, qd.qty);
-        
+
         if (!new_qty) continue;
         if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
           let new_path = new Set(qd.path);
@@ -137,7 +143,9 @@ function findPath(
 
 // vlink and usdc
 
-console.log(findPath(flx, wait, BigInt("10000")*(BigInt(10)**BigInt(decimal[flx]))));
+console.log(
+  findPath(flx, wait, BigInt("10000") * BigInt(10) ** BigInt(decimal[flx]))
+);
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 // while (curr != "") {
