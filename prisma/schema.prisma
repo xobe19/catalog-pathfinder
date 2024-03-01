@@ -14,12 +14,9 @@ datasource db {
 }
 
 model Token {
-  address  String      @id
-  decimals Int
-  symbol   String
-  name     String
-  token0   PairToken[] @relation("token0")
-  token1   PairToken[] @relation("token1")
+  address String      @id
+  token0  PairToken[] @relation("token0")
+  token1  PairToken[] @relation("token1")
 }
 
 model PairToken {
@@ -32,7 +29,6 @@ model PairToken {
 }
 
 model Pair {
-  index         Int        @unique
   address       String     @id
   tokens        PairToken? @relation(fields: [tokensId], references: [pair])
   tokensId      String?
