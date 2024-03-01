@@ -1,6 +1,6 @@
-import { Pair, PairToken as PairTokenT } from "./data-fetcher/types";
-import reserves_imp from "./top_pairs.json";
 import { PrismaClient } from "@prisma/client";
+import { PairBigInt } from "./data-fetcher/types";
+
 const prisma = new PrismaClient();
 
 const data = {
@@ -17,18 +17,14 @@ const data = {
   },
 };
 
-async function getReservesFromDb(): Promise<Pair[]> {
-  const t = await prisma.pairMar1.findMany();
-  const toRet = t.map((e) => ({
+async function getReservesFromDb(): Promise<PairBigInt[]> {
+  const t = await prisma.pair.findMany();
+  const toRet: PairBigInt[] = t.map((e) => ({
     address: e.address.toLowerCase(),
-    token0: {
-      address: e.token0Address.toLowerCase(),
-      quantity: BigInt(e.token0Reserve).valueOf(),
-    },
-    token1: {
-      address: e.token1Address.toLowerCase(),
-      quantity: BigInt(e.token1Reserve).valueOf(),
-    },
+    token0Address: e.token0Address.toLowerCase(),
+    token0Reserve: BigInt(e.token0Reserve).valueOf(),
+    token1Address: e.token1Address.toLowerCase(),
+    token1Reserve: BigInt(e.token1Reserve).valueOf(),
   }));
   return toRet;
 }
@@ -38,12 +34,12 @@ async function getReservesFromDb(): Promise<Pair[]> {
   console.log(`fetched ${reserves.length} rows from db`);
 
   let graph: {
-    [key in string]: [string, Pair][];
+    [key in string]: [string, PairBigInt][];
   } = {};
 
   for (let pair of reserves) {
-    let token0 = pair.token0.address;
-    let token1 = pair.token1.address;
+    let token0 = pair.token0Address;
+    let token1 = pair.token1Address;
     if (!graph[token0]) graph[token0] = [];
     graph[token0].push([token1, pair]);
     if (!graph[token1]) graph[token1] = [];
@@ -139,11 +135,11 @@ async function getReservesFromDb(): Promise<Pair[]> {
         for (let [neighbour, p] of graph[addr]) {
           //  console.log(neighbour);
           if (qd.path.has(neighbour)) continue;
-          //   console.log(p.token0.quantity);
-          //  console.log(p.token1.quantity);
-          let q1 = p.token0.quantity;
-          let q2 = p.token1.quantity;
-          if (p.token0.address != addr) {
+          //   console.log(p.token0Reserve);
+          //  console.log(p.token1Reserve);
+          let q1 = p.token0Reserve;
+          let q2 = p.token1Reserve;
+          if (p.token0Address != addr) {
             let tmp = q2;
             q2 = q1;
             q1 = tmp;

@@ -52,7 +52,7 @@ export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   );
 }
 
-export async function getTokenDetails(tokenA: string, tokenB: string) {
+async function getTokenDetails(tokenA: string, tokenB: string) {
   const calls = [
     /* Token 0 -------------------------------------------------------------- */
     prepareCall(

@@ -1,7 +1,5 @@
-import fs from "fs";
-import { multicall } from ".";
+import { multicall, prepareCall } from ".";
 import { UNISWAP_V2_ADDRESS } from "./constants";
-import { prepareCall } from "./single-function-no-args";
 // import { addressModelRef } from "./mongo-client";
 
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {

@@ -1,17 +1,7 @@
-export interface Token {
-  address: string;
-  name?: string;
-}
+import { Pair } from "@prisma/client";
 
-export interface PairToken extends Token {
-  quantity: BigInt;
-}
-
-export interface Pair {
-  address: string;
-  token0: PairToken;
-  token1: PairToken;
-}
+// https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
+type Modify<T, R> = Omit<T, keyof R> & R;
 
 export interface Resolver {
   target: string;
@@ -19,7 +9,10 @@ export interface Resolver {
   callData: string;
 }
 
-export interface TokenDetailsReponse {
-  decimal: number;
-  symbol: string;
-}
+export type PairBigInt = Modify<
+  Pair,
+  {
+    token0Reserve: bigint;
+    token1Reserve: bigint;
+  }
+>;
