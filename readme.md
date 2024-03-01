@@ -29,3 +29,7 @@ docker exec -it pathfinder-postgres bash
 su - postgres
 \dt
 ```
+
+---
+
+address,token0.\_id,token0.address,token0.quantity,token1.\_id,token1.address,token1.quantity

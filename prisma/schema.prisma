@@ -13,25 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Token {
-  address String      @id
-  token0  PairToken[] @relation("token0")
-  token1  PairToken[] @relation("token1")
-}
-
-model PairToken {
-  pair     String @id
-  token0   Token  @relation("token0", fields: [token0Id], references: [address])
-  token0Id String
-  token1   Token  @relation("token1", fields: [token1Id], references: [address])
-  token1Id String
-  Pair     Pair[]
-}
-
 model Pair {
-  address       String     @id
-  tokens        PairToken? @relation(fields: [tokensId], references: [pair])
-  tokensId      String?
-  token0Reserve BigInt?
-  token1Reserve BigInt?
+  address       String @id
+  token0Address String
+  token1Address String
+  token0Reserve String
+  token1Reserve String
 }
