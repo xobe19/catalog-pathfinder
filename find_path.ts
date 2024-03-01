@@ -87,7 +87,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
     [key in string]: Set<string>;
   } = {};
 
-  type QueueElement = { addr: string; path: Set<string>; qty: bigint };
+  type QueueElement = { addr: string; path: Set<string>; qty: bigint; intermediate_path:  Set<bigint>};
   function findPath(
     inTokenAddress: string,
     outTokenAddress: string,
@@ -97,14 +97,17 @@ async function getReservesFromDb(): Promise<Pair[]> {
       [key in string]: {
         path: Set<String>;
         qty: bigint;
+        intermediate_path: Set<bigint>;
       };
     } = {};
 
     q[inTokenAddress] = {
       path: new Set(),
       qty: inAmt,
+      intermediate_path: new Set()
     };
     q[inTokenAddress].path.add(inTokenAddress);
+    q[inTokenAddress].intermediate_path.add(inAmt);
 
     let HOPS = 2;
 
@@ -114,6 +117,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
         [key in string]: {
           path: Set<String>;
           qty: bigint;
+          intermediate_path: Set<bigint>
         };
       } = {};
 
@@ -121,6 +125,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
         nq[addr] = {
           path: new Set(q[addr].path),
           qty: q[addr].qty,
+          intermediate_path: new Set(q[addr].intermediate_path)
         };
       }
       for (let addr in q) {
@@ -143,8 +148,10 @@ async function getReservesFromDb(): Promise<Pair[]> {
           if (!new_qty) continue;
           if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
             let new_path = new Set(qd.path);
+            let new_intermediate_path = new Set(qd.intermediate_path);
             new_path.add(neighbour);
-            nq[neighbour] = { path: new_path, qty: new_qty };
+            new_intermediate_path.add(new_qty);
+            nq[neighbour] = { path: new_path, qty: new_qty, intermediate_path:  new_intermediate_path};
           }
         }
         //  console.log("neigh end");
