@@ -33,3 +33,11 @@ su - postgres
 ---
 
 address,token0.\_id,token0.address,token0.quantity,token1.\_id,token1.address,token1.quantity
+
+---
+
+pairs:
+
+- wbtc, usdc, amount: 1000000000, hops: 10, time: 23.1919656 seconds
+- usdc, usdc, amount: 1000000000, hops: 10, time: 27.9048562 seconds
+- shibainu, usdc, amount: 1000000000, hops: 10, time: 43.4950882 seconds
