@@ -51,7 +51,7 @@ async function addToDb(pairs: any[]) {
     return pair;
   });
 
-  await prisma.pair.createMany({
+  await prisma.pairMar1.createMany({
     data: pairsToAdd,
   });
 }

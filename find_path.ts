@@ -18,7 +18,7 @@ const data = {
 };
 
 async function getReservesFromDb(): Promise<Pair[]> {
-  const t = await prisma.pair.findMany();
+  const t = await prisma.pairMar1.findMany();
   const toRet = t.map((e) => ({
     address: e.address.toLowerCase(),
     token0: {
@@ -106,7 +106,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
     };
     q[inTokenAddress].path.add(inTokenAddress);
 
-    let HOPS = 10;
+    let HOPS = 2;
 
     while (HOPS-- > 0) {
       // console.log(q);
@@ -159,7 +159,13 @@ async function getReservesFromDb(): Promise<Pair[]> {
 
   // vlink and usdc
 
-  console.log(findPath(data.shibainu.address, data.usdc.address, BigInt("10")*(BigInt(10)**BigInt(data.shibainu.decimal))));
+  console.log(
+    findPath(
+      data.shibainu.address,
+      data.usdc.address,
+      BigInt("100000000000000000000000000")
+    )
+  );
   // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
   // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
   // while (curr != "") {
