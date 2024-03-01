@@ -87,7 +87,12 @@ async function getReservesFromDb(): Promise<Pair[]> {
     [key in string]: Set<string>;
   } = {};
 
-  type QueueElement = { addr: string; path: Set<string>; qty: bigint; intermediate_path:  Set<bigint>};
+  type QueueElement = {
+    addr: string;
+    path: Set<string>;
+    qty: bigint;
+    intermediate_path: Set<bigint>;
+  };
   function findPath(
     inTokenAddress: string,
     outTokenAddress: string,
@@ -104,12 +109,12 @@ async function getReservesFromDb(): Promise<Pair[]> {
     q[inTokenAddress] = {
       path: new Set(),
       qty: inAmt,
-      intermediate_path: new Set()
+      intermediate_path: new Set(),
     };
     q[inTokenAddress].path.add(inTokenAddress);
     q[inTokenAddress].intermediate_path.add(inAmt);
 
-    let HOPS = 2;
+    let HOPS = 10;
 
     while (HOPS-- > 0) {
       // console.log(q);
@@ -117,7 +122,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
         [key in string]: {
           path: Set<String>;
           qty: bigint;
-          intermediate_path: Set<bigint>
+          intermediate_path: Set<bigint>;
         };
       } = {};
 
@@ -125,7 +130,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
         nq[addr] = {
           path: new Set(q[addr].path),
           qty: q[addr].qty,
-          intermediate_path: new Set(q[addr].intermediate_path)
+          intermediate_path: new Set(q[addr].intermediate_path),
         };
       }
       for (let addr in q) {
@@ -151,7 +156,11 @@ async function getReservesFromDb(): Promise<Pair[]> {
             let new_intermediate_path = new Set(qd.intermediate_path);
             new_path.add(neighbour);
             new_intermediate_path.add(new_qty);
-            nq[neighbour] = { path: new_path, qty: new_qty, intermediate_path:  new_intermediate_path};
+            nq[neighbour] = {
+              path: new_path,
+              qty: new_qty,
+              intermediate_path: new_intermediate_path,
+            };
           }
         }
         //  console.log("neigh end");
@@ -161,6 +170,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
 
     console.log("Optimal path");
     console.log(q[outTokenAddress].path);
+    console.log(q[outTokenAddress].intermediate_path);
     return q[outTokenAddress].qty;
   }
 
