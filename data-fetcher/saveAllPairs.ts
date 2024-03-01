@@ -2,7 +2,7 @@ import fs from "fs";
 import { multicall } from ".";
 import { UNISWAP_V2_ADDRESS } from "./constants";
 import { prepareCall } from "./single-function-no-args";
-import { addressModelRef } from "./mongo-client";
+// import { addressModelRef } from "./mongo-client";
 
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   const resolverCalls = calls.map((call) => call.resolver);
@@ -20,7 +20,7 @@ export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   res.forEach((e) => {
     obj.push({ address: e });
   });
-  await addressModelRef.insertMany(obj);
+  // await addressModelRef.insertMany(obj);
 }
 
 async function getPairAddress(startRange: number, endRange: number) {
@@ -53,4 +53,4 @@ async function createAndWriteBatch() {
   }
 }
 
-createAndWriteBatch();
+// createAndWriteBatch();

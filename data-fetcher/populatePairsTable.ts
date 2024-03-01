@@ -1,3 +1,6 @@
+/* TODO: remove ts-nocheck */
+// @ts-nocheck
+
 import { Pair, PrismaClient } from "@prisma/client";
 import { executeCalls, prepareCall } from ".";
 import { UniswapV2Factory_ADDRESS } from "./constants";
