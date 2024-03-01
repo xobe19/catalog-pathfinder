@@ -3,14 +3,19 @@ import reserves_imp from "./top_pairs.json";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const gooch = "0x6d3d490964205c8bc8ded39e48e88e8fde45b41f";
-const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const flx = "0x6243d8cea23066d098a15582d81a598b4e8391f4";
-const wait = "0x2559813bbb508c4c79e9ccce4703bcb1f149edd7";
-const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-const shibainu = "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce";
+const data = {
+  gooch: { address: "0x6d3d490964205c8bc8ded39e48e88e8fde45b41f", decimal: -1 },
+  wbtc: { address: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", decimal: -1 },
+  weth: { address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", decimal: -1 },
+  flx: { address: "0x6243d8cea23066d098a15582d81a598b4e8391f4", decimal: -1 },
+  wait: { address: "0x2559813bbb508c4c79e9ccce4703bcb1f149edd7", decimal: -1 },
+  usdc: { address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", decimal: -1 },
+  usdt: { address: "0xdac17f958d2ee523a2206206994597c13d831ec7", decimal: -1 },
+  shibainu: {
+    address: "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
+    decimal: -1,
+  },
+};
 
 async function getReservesFromDb(): Promise<Pair[]> {
   const t = await prisma.pair.findMany();
@@ -154,7 +159,7 @@ async function getReservesFromDb(): Promise<Pair[]> {
 
   // vlink and usdc
 
-  console.log(findPath(shibainu, usdc, BigInt("1000000000")));
+  console.log(findPath(data.shibainu.address, data.usdc.address, BigInt("10")*(BigInt(10)**BigInt(data.shibainu.decimal))));
   // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
   // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
   // while (curr != "") {
