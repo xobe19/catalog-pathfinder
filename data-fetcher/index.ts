@@ -20,13 +20,14 @@ export const multicall = new Contract(
 export function prepareCall(
   contractAddress: string,
   functionName: string,
-  interfaceAbi: string
+  interfaceAbi: string,
+  args?: any[]
 ) {
   const functionInterface = new Interface([interfaceAbi]);
   const resolver: Resolver = {
     target: contractAddress,
     allowFailure: true,
-    callData: functionInterface.encodeFunctionData(functionName),
+    callData: functionInterface.encodeFunctionData(functionName, args),
   };
   const decodeResult = (resolverResult: string) => {
     return functionInterface.decodeFunctionResult(functionName, resolverResult);
@@ -39,13 +40,13 @@ export function prepareCall(
   };
 }
 
-async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
+export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   const resolverCalls = calls.map((call) => call.resolver);
 
   type Aggregate3Response = { success: boolean; returnData: string };
+
   const resolverResults: Aggregate3Response[] =
     await multicall.aggregate3.staticCall(resolverCalls);
-
   return resolverResults.map((resolverResult, i) =>
     calls[i].decodeResult(resolverResult.returnData)
   );
@@ -53,6 +54,7 @@ async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
 
 export async function getTokenDetails(tokenA: string, tokenB: string) {
   const calls = [
+    /* Token 0 -------------------------------------------------------------- */
     prepareCall(
       tokenA,
       "symbol",

@@ -1,19 +1,31 @@
-## Set up redis
-
-### Start redis server and expose it's default port
+## Set up database
 
 ```bash
-docker run --name redis-container -p 6379:6379 -d redis redis-server --save 60 1 --loglevel warning
+docker compose up -d
 ```
 
-### Run redis-cli to test out stuff
+- set environment variable DATABASE_URL
+
+## View database
+
+- go to http://localhost to view pgAdmin
+- login with default credentials present in [compose.yaml](compose.yaml)
+- in the **Register - Server** window
+
+  - fill out general info
+  - get hostname from
+
+  ```bash
+  docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pathfinder-postgres
+  ```
+
+  - get username and password from [compose.yaml](compose.yaml)
+  - click **save**
+
+## Play around in postgres cli
 
 ```bash
-docker exec -it redis-container redis-cli
-```
-
-### List all set keys
-
-```
-keys *
+docker exec -it pathfinder-postgres bash
+su - postgres
+\dt
 ```
