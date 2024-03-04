@@ -3,7 +3,7 @@ import { UNISWAP_V2_ADDRESS } from "./constants";
 // import { addressModelRef } from "./mongo-client";
 
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
-  const resolverCalls = calls.map((call) => call.resolver);
+  const resolverCalls = calls.map((call) => call.call);
 
   type Aggregate3Response = { success: boolean; returnData: string };
   const resolverResults: Aggregate3Response[] =

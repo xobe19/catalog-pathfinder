@@ -3,6 +3,17 @@ import { PairBigInt } from "./data-fetcher/types";
 
 const prisma = new PrismaClient();
 
+function disp(addr: Set<String>, intermediate_path: Set<bigint> ) {
+  let len = addr.size;
+  console.log(len);
+  let itr_1 = addr.values();
+  let itr_2 = intermediate_path.values();
+  console.log("Addr                                        Amt");
+  for(let _ = 0; _ < len; _++) {
+    console.log(`${itr_1.next().value} , ${itr_2.next().value}`)
+  }
+}
+
 const data = {
   gooch: { address: "0x6d3d490964205c8bc8ded39e48e88e8fde45b41f", decimal: -1 },
   wbtc: { address: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", decimal: -1 },
@@ -165,8 +176,7 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
     }
 
     console.log("Optimal path");
-    console.log(q[outTokenAddress].path);
-    console.log(q[outTokenAddress].intermediate_path);
+    disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path) 
     return q[outTokenAddress].qty;
   }
 

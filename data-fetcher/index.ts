@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { Contract, Interface, JsonRpcProvider } from "ethers";
 import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "./constants";
-import { Resolver } from "./types";
+import { Call3 } from "./types";
 dotenv.config();
 
 // Setup the provider
@@ -24,7 +24,7 @@ export function prepareCall(
   args?: any[]
 ) {
   const functionInterface = new Interface([interfaceAbi]);
-  const resolver: Resolver = {
+  const call: Call3 = {
     target: contractAddress,
     allowFailure: true,
     callData: functionInterface.encodeFunctionData(functionName, args),
@@ -35,13 +35,13 @@ export function prepareCall(
 
   return {
     functionInterface,
-    resolver,
+    call,
     decodeResult,
   };
 }
 
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
-  const resolverCalls = calls.map((call) => call.resolver);
+  const resolverCalls = calls.map((call) => call.call);
 
   type Aggregate3Response = { success: boolean; returnData: string };
 

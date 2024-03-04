@@ -3,7 +3,7 @@ import { Pair } from "@prisma/client";
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
 type Modify<T, R> = Omit<T, keyof R> & R;
 
-export interface Resolver {
+export interface Call3 {
   target: string;
   allowFailure: boolean;
   callData: string;
