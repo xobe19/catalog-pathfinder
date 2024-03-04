@@ -16,3 +16,11 @@ export type PairBigInt = Modify<
     token1Reserve: bigint;
   }
 >;
+
+export type swapExactTokensForTokensArgs = {
+  amountIn: bigint;
+  amountOutMin: number;
+  path: string[];
+  to: string;
+  deadline: number;
+};

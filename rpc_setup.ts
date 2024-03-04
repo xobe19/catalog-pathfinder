@@ -3,7 +3,11 @@ import { Contract, JsonRpcProvider } from "ethers";
 const ANKR_URL =
   "https://rpc.ankr.com/eth/d09580d880b1fdb84b26c8f3421403c157760bfbc46b590476ffdb6b42b6f490"; // Replace APIKEY with your Ankr API key
 
+export const GOERLI_ETH_URL = "https://rpc.ankr.com/eth_goerli";
+
 export const provider = new JsonRpcProvider(ANKR_URL);
+export const test_provider = new JsonRpcProvider(GOERLI_ETH_URL);
+
 const uniswapV2FactoryABI = [
   {
     inputs: [
@@ -564,6 +568,26 @@ export const uniswapV2PairABI = [
   },
 ];
 
-export const symbolABI = [{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}];
+export const symbolABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", type: "string" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
-export const upgradableContractABI = [{"constant":true,"inputs":[],"name":"implementation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}];
+export const upgradableContractABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: "implementation",
+    outputs: [{ name: "", type: "address" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
