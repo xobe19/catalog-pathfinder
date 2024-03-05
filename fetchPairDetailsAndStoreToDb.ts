@@ -118,6 +118,7 @@ async function main() {
   try {
     const fileRef = fs.readFileSync(pairAddressesFilePath, "utf-8");
     const pairAddresses = fileRef.split("\n");
+    if (pairAddresses[pairAddresses.length - 1] === "") pairAddresses.pop();
     console.log(`Pair addresses read from ${pairAddressesFilePath}`);
 
     // no. of contract read calls to batch into 1 RPC call

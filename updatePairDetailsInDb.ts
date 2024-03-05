@@ -92,10 +92,6 @@ async function main() {
   console.log(new Date().toLocaleString());
   console.time("service time");
 
-  // clear the db first
-  await prisma.pair.deleteMany({});
-  console.log("db cleared");
-
   const pairAddressesFilePath = path.join(
     __dirname,
     "data",
@@ -105,6 +101,7 @@ async function main() {
   try {
     const fileRef = fs.readFileSync(pairAddressesFilePath, "utf-8");
     const pairAddresses = fileRef.split("\n");
+    if (pairAddresses[pairAddresses.length - 1] === "") pairAddresses.pop();
     console.log(`Pair addresses read from ${pairAddressesFilePath}`);
 
     // no. of contract read calls to batch into 1 RPC call
@@ -124,16 +121,15 @@ async function main() {
       if (size === pairAddresses.length - i || resCount === promiseBatchSize) {
         const results = await Promise.all(promiseBatch);
         await prisma.$executeRawUnsafe(
-          `UPDATE Pair
-SET token0Reserve = new_values.new_token0_reserve,
-    token1Reserve = new_values.new_token1_reserve
-FROM (
-    VALUES 
-        ${toDbUpdateQuery(pairAddresses, results)}
-        -- Add more rows for other updates
-    ) AS new_values (address, new_token0_reserve, new_token1_reserve)
-WHERE Pair.address = new_values.address;
-`
+          `UPDATE "Pair"
+          SET "token0Reserve" = new_values.new_token0_reserve,
+              "token1Reserve" = new_values.new_token1_reserve
+          FROM (
+              VALUES 
+              ${toDbUpdateQuery(pairAddresses, results)}
+                  -- Add more rows for other updates
+              ) AS new_values (address, new_token0_reserve, new_token1_reserve)
+          WHERE "Pair".address = new_values.address;`
         );
         console.log(`updated rows in db: ${i + size}`);
         resCount = 0;
