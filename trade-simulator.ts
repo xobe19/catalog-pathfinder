@@ -46,6 +46,44 @@ export class Simulator {
     }
   };
 
+  // ? approve amountIn token to UniswapV2Router from from_address && swapTokens
+  static swapUniswapV2 = async (
+    from_address: string,
+    amountIn: bigint,
+    path: string[],
+    amountOutMin: number
+  ) => {
+    // ? MKR -> WTBC
+    const transactionData = CalldataGenerator.approveTokens(
+      path[0],
+      UNISWAP_V2_ROUTER,
+      amountIn,
+      from_address
+    );
+
+    const swapCall = CalldataGenerator.swapTokens(
+      amountIn,
+      path,
+      from_address,
+      amountOutMin
+    );
+
+    const calls: tenderlyTxObj[] = [
+      {
+        from: transactionData?.txObj.from!,
+        to: transactionData?.txObj.to!,
+        input: transactionData?.calldata!,
+      },
+      {
+        from: swapCall?.txObj.from!,
+        to: swapCall?.txObj.to!,
+        input: swapCall?.calldata!,
+      },
+    ];
+
+    await this.executeBatch(calls);
+  };
+
   static test = async () => {
     // ? MKR -> WTBC
     const whale = "0xe2b03ed9a9213fe82413ca9338856433acc5a853";

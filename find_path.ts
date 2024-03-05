@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PairBigInt } from "./types";
 import { parseUnits } from "ethers";
+import { Simulator } from "./trade-simulator";
 
 const prisma = new PrismaClient();
 
@@ -189,21 +190,16 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
 
     console.log("Optimal path");
     disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path);
-    return q[outTokenAddress].qty;
+    return q[outTokenAddress].path;
   }
 
   // vlink and usdc
 
-  console.log(
-    formatDecimal(
-      findPath(
-        data.maker.address,
-        data.wbtc.address,
-        BigInt("6000000000000000000")
-      ),
-      8
-    )
-  );
+  const amount = BigInt("6000000000000000000");
+  const res = findPath(data.maker.address, data.wbtc.address, amount);
+  const path = Array.from(res) as string[];
+  Simulator.swapUniswapV2("", amount, path, 0);
+
   // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
   // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
   // while (curr != "") {
