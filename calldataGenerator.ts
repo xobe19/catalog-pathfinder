@@ -30,7 +30,7 @@ export class CalldataGenerator {
       const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
 
       const txInfo: swapExactTokensForTokensArgs = {
-        amountIn: parseUnits(amountIn.toString(), decimalOfTokenA),
+        amountIn: amountIn,
         amountOutMin: amountOutMin ? amountOutMin : 0,
         path: path,
         to: walletAddress,
@@ -64,12 +64,13 @@ export class CalldataGenerator {
    * @param ERC20_TOKEN - The address of the ERC20 token.
    * @param spender_address - The address of the spender.
    * @param amount - The amount of tokens to approve for spending.
+   * @param from_address -  `msg.sender`
    * @returns The call data for the transaction.
    */
   static approveTokens(
     ERC20_TOKEN: string,
     spender_address: string,
-    amount: number,
+    amount: bigint,
     from_address: string
   ) {
     try {

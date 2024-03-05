@@ -1,4 +1,4 @@
-import { CalldataGenerator } from "./callDataGenerator";
+import { CalldataGenerator } from "./calldataGenerator";
 
 const path = [
   "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
@@ -14,7 +14,7 @@ class TradeExecutor {
   static async approve(
     ERC20_TOKEN: string,
     spender_address: string,
-    amount: number,
+    amount: bigint,
     from_address: string
   ) {
     const tx = CalldataGenerator.approveTokens(
@@ -26,12 +26,3 @@ class TradeExecutor {
     console.log(tx);
   }
 }
-
-console.log(
-  CalldataGenerator.swapTokens(
-    BigInt(100000000000000000000000000),
-    path,
-    18,
-    "0x5f0923323FA1b99f38Ed07254d94F15D7803D4a6"
-  )
-);

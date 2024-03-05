@@ -30,3 +30,9 @@ export type transactionObj = {
   data: string;
   from: string;
 };
+
+export type tenderlyTxObj = {
+  from: string;
+  to: string;
+  input: string;
+};
