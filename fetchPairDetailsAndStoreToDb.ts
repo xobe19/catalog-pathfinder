@@ -2,7 +2,7 @@ import { Pair, PrismaClient } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
-import { executeCalls, prepareCall } from ".";
+import { executeCalls, prepareCall } from "./multicall";
 
 const prisma = new PrismaClient();
 
@@ -109,7 +109,11 @@ async function main() {
   await prisma.pair.deleteMany({});
   console.log("db cleared");
 
-  const pairAddressesFilePath = path.join(__dirname, "addresses.csv");
+  const pairAddressesFilePath = path.join(
+    __dirname,
+    "data",
+    "uniswap_v2_pair_addresses.csv"
+  );
 
   try {
     const fileRef = fs.readFileSync(pairAddressesFilePath, "utf-8");

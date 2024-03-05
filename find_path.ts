@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { PairBigInt } from "./data-fetcher/types";
+import { PairBigInt } from "./types";
 
 const prisma = new PrismaClient();
 
-function disp(addr: Set<String>, intermediate_path: Set<bigint> ) {
+function disp(addr: Set<String>, intermediate_path: Set<bigint>) {
   let len = addr.size;
   console.log(len);
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
   console.log("Addr                                        Amt");
-  for(let _ = 0; _ < len; _++) {
-    console.log(`${itr_1.next().value} , ${itr_2.next().value}`)
+  for (let _ = 0; _ < len; _++) {
+    console.log(`${itr_1.next().value} , ${itr_2.next().value}`);
   }
 }
 
@@ -176,7 +176,7 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
     }
 
     console.log("Optimal path");
-    disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path) 
+    disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path);
     return q[outTokenAddress].qty;
   }
 

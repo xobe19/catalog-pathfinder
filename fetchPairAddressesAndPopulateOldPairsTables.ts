@@ -2,7 +2,7 @@
 // @ts-nocheck
 
 import { Pair, PrismaClient } from "@prisma/client";
-import { executeCalls, prepareCall } from ".";
+import { executeCalls, prepareCall } from "./multicall";
 import { UniswapV2Factory_ADDRESS } from "./constants";
 
 const prisma = new PrismaClient();

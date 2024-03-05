@@ -1,5 +1,5 @@
-import { multicall, prepareCall } from ".";
 import { UNISWAP_V2_ADDRESS } from "./constants";
+import { multicall, prepareCall } from "./multicall";
 // import { addressModelRef } from "./mongo-client";
 
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {

@@ -1,7 +1,7 @@
-import { Contract, ethers, parseUnits } from "ethers";
-import { provider } from "../rpc_setup";
-import { swapABI } from "./abi";
+import { Contract, parseUnits } from "ethers";
+import { swapABI } from "./abis";
 import { UNISWAP_V2_ROUTER } from "./constants";
+import { provider } from "./rpc_setup";
 import { swapExactTokensForTokensArgs } from "./types";
 
 async function generateCallData(
