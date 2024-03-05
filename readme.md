@@ -76,7 +76,8 @@ let HOPS = 10;
 Shitcoins:
 USD: 0xd233d1f6fd11640081abb8db125f722b5dc729dc
 AMIGO: 0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3
-Protectors of the World (WeR1000) : 0x71f6E75e6eca147351D3d344Ec27253a4a38A15D
+Protectors of the World (WeR1000): 0x71f6E75e6eca147351D3d344Ec27253a4a38A15D
+Seed Of The Universe (SOTU): 0xa91c82b6933105c23298e631a0c1be751d239162
 
 Delete:
 DELETE from "Pair"
