@@ -48,7 +48,5 @@ export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   const results: Aggregate3Response[] = await multicall.aggregate3.staticCall(
     call3s
   );
-  return results.map((resolverResult, i) =>
-    calls[i].decodeResult(resolverResult.returnData)
-  );
+  return results.map((result, i) => calls[i].decodeResult(result.returnData));
 }

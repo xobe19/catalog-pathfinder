@@ -20,11 +20,3 @@ model Pair {
   token0Reserve String
   token1Reserve String
 }
-
-model PairMar1 {
-  address       String @id
-  token0Address String
-  token1Address String
-  token0Reserve String
-  token1Reserve String
-}
