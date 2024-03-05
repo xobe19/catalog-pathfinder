@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { PairBigInt } from "./types";
-import { parseUnits } from "ethers";
 import { Simulator } from "./trade-simulator";
+import { PairBigInt } from "./types";
 
 const prisma = new PrismaClient();
 
@@ -57,13 +56,43 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
   return toRet;
 }
 
-(async function () {
-  const reserves = await getReservesFromDb();
-  console.log(`fetched ${reserves.length} rows from db`);
+function getOut(
+  in_token_res: bigint,
+  out_token_res: bigint,
+  inTokenAmt: bigint
+) {
+  let qty_token1_recieve = null;
+  let st = BigInt(1),
+    en = out_token_res;
+  while (st <= en) {
+    let mid = (st + en) / BigInt(2);
+    let condition =
+      inTokenAmt < in_token_res &&
+      ((inTokenAmt + in_token_res) * BigInt(1000) - inTokenAmt * BigInt(3)) *
+        ((out_token_res - mid) * BigInt(1000)) >=
+        in_token_res * out_token_res * BigInt(1000000);
+    if (condition) {
+      qty_token1_recieve = mid;
 
+      st = mid + BigInt(1);
+    } else {
+      en = mid - BigInt(1);
+    }
+  }
+  return qty_token1_recieve;
+}
+
+export async function findPath(
+  inTokenAddress: string,
+  outTokenAddress: string,
+  inAmt: bigint
+) {
   let graph: {
     [key in string]: [string, PairBigInt][];
   } = {};
+
+  const reserves = await getReservesFromDb();
+  console.log(`fetched ${reserves.length} rows from db`);
 
   for (let pair of reserves) {
     let token0 = pair.token0Address;
@@ -73,56 +102,28 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
     if (!graph[token1]) graph[token1] = [];
     graph[token1].push([token0, pair]);
   }
-  let maxOut: {
-    [key in string]: bigint;
+
+  let q: {
+    [key in string]: {
+      path: Set<String>;
+      qty: bigint;
+      intermediate_path: Set<bigint>;
+    };
   } = {};
 
-  let prev: {
-    [key in string]: string;
-  } = {};
-
-  function getOut(
-    in_token_res: bigint,
-    out_token_res: bigint,
-    inTokenAmt: bigint
-  ) {
-    let qty_token1_recieve = null;
-    let st = BigInt(1),
-      en = out_token_res;
-    while (st <= en) {
-      let mid = (st + en) / BigInt(2);
-      let condition =
-        inTokenAmt < in_token_res &&
-        ((inTokenAmt + in_token_res) * BigInt(1000) - inTokenAmt * BigInt(3)) *
-          ((out_token_res - mid) * BigInt(1000)) >=
-          in_token_res * out_token_res * BigInt(1000000);
-      if (condition) {
-        qty_token1_recieve = mid;
-
-        st = mid + BigInt(1);
-      } else {
-        en = mid - BigInt(1);
-      }
-    }
-    return qty_token1_recieve;
-  }
-
-  let inPath: {
-    [key in string]: Set<string>;
-  } = {};
-
-  type QueueElement = {
-    addr: string;
-    path: Set<string>;
-    qty: bigint;
-    intermediate_path: Set<bigint>;
+  q[inTokenAddress] = {
+    path: new Set(),
+    qty: inAmt,
+    intermediate_path: new Set(),
   };
-  function findPath(
-    inTokenAddress: string,
-    outTokenAddress: string,
-    inAmt: bigint
-  ) {
-    let q: {
+  q[inTokenAddress].path.add(inTokenAddress);
+  q[inTokenAddress].intermediate_path.add(inAmt);
+
+  let HOPS = 10;
+
+  while (HOPS-- > 0) {
+    // console.log(q);
+    let nq: {
       [key in string]: {
         path: Set<String>;
         qty: bigint;
@@ -130,77 +131,57 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
       };
     } = {};
 
-    q[inTokenAddress] = {
-      path: new Set(),
-      qty: inAmt,
-      intermediate_path: new Set(),
-    };
-    q[inTokenAddress].path.add(inTokenAddress);
-    q[inTokenAddress].intermediate_path.add(inAmt);
-
-    let HOPS = 10;
-
-    while (HOPS-- > 0) {
-      // console.log(q);
-      let nq: {
-        [key in string]: {
-          path: Set<String>;
-          qty: bigint;
-          intermediate_path: Set<bigint>;
-        };
-      } = {};
-
-      for (let addr in q) {
-        nq[addr] = {
-          path: new Set(q[addr].path),
-          qty: q[addr].qty,
-          intermediate_path: new Set(q[addr].intermediate_path),
-        };
-      }
-      for (let addr in q) {
-        let qd = q[addr];
-        //  console.log("neighbours");
-        for (let [neighbour, p] of graph[addr]) {
-          //  console.log(neighbour);
-          if (qd.path.has(neighbour)) continue;
-          //   console.log(p.token0Reserve);
-          //  console.log(p.token1Reserve);
-          let q1 = p.token0Reserve;
-          let q2 = p.token1Reserve;
-          if (p.token0Address != addr) {
-            let tmp = q2;
-            q2 = q1;
-            q1 = tmp;
-          }
-          let new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
-
-          if (!new_qty) continue;
-          if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
-            let new_path = new Set(qd.path);
-            let new_intermediate_path = new Set(qd.intermediate_path);
-            new_path.add(neighbour);
-            new_intermediate_path.add(new_qty);
-            nq[neighbour] = {
-              path: new_path,
-              qty: new_qty,
-              intermediate_path: new_intermediate_path,
-            };
-          }
-        }
-        //  console.log("neigh end");
-      }
-      q = nq;
+    for (let addr in q) {
+      nq[addr] = {
+        path: new Set(q[addr].path),
+        qty: q[addr].qty,
+        intermediate_path: new Set(q[addr].intermediate_path),
+      };
     }
+    for (let addr in q) {
+      let qd = q[addr];
+      //  console.log("neighbours");
+      for (let [neighbour, p] of graph[addr]) {
+        //  console.log(neighbour);
+        if (qd.path.has(neighbour)) continue;
+        //   console.log(p.token0Reserve);
+        //  console.log(p.token1Reserve);
+        let q1 = p.token0Reserve;
+        let q2 = p.token1Reserve;
+        if (p.token0Address != addr) {
+          let tmp = q2;
+          q2 = q1;
+          q1 = tmp;
+        }
+        let new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
 
-    console.log("Optimal path");
-    disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path);
-    return q[outTokenAddress].path;
+        if (!new_qty) continue;
+        if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
+          let new_path = new Set(qd.path);
+          let new_intermediate_path = new Set(qd.intermediate_path);
+          new_path.add(neighbour);
+          new_intermediate_path.add(new_qty);
+          nq[neighbour] = {
+            path: new_path,
+            qty: new_qty,
+            intermediate_path: new_intermediate_path,
+          };
+        }
+      }
+      //  console.log("neigh end");
+    }
+    q = nq;
   }
 
-  // vlink and usdc
+  console.log("Optimal path");
+  disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path);
+  return q[outTokenAddress].path;
+}
 
+// vlink and usdc
+async function main() {
   const amount = BigInt("60000000000000000000");
-  const res = findPath(data.usdc.address, data.wbtc.address, amount);
+  const res = await findPath(data.usdc.address, data.wbtc.address, amount);
   const path = Array.from(res) as string[];
   Simulator.swapUniswapV2(
     "0xD6153F5af5679a75cC85D8974463545181f48772",
@@ -208,12 +189,12 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
     path,
     0
   );
+}
 
-  // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
-  // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
-  // while (curr != "") {
-  //   console.log(curr);
-  //   let prv = prev[curr];
-  //   curr = prv;
-  // }
-})();
+// console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
+// let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
+// while (curr != "") {
+//   console.log(curr);
+//   let prv = prev[curr];
+//   curr = prv;
+// }
