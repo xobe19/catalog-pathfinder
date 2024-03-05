@@ -1,4 +1,4 @@
-import { UNISWAP_V2_ADDRESS } from "./constants";
+import { UniswapV2Factory_ADDRESS } from "./constants";
 import { multicall, prepareCall } from "./multicall";
 // import { addressModelRef } from "./mongo-client";
 
@@ -28,9 +28,12 @@ async function getPairAddress(startRange: number, endRange: number) {
     "function allPairs(uint) external view returns (address pair)";
 
   for (let i = startRange; i < endRange; i++) {
-    const singleCall = prepareCall(UNISWAP_V2_ADDRESS, fnName, interfaceName, [
-      BigInt(i),
-    ]);
+    const singleCall = prepareCall(
+      UniswapV2Factory_ADDRESS,
+      fnName,
+      interfaceName,
+      [BigInt(i)]
+    );
     calls.push(singleCall);
   }
   const result = await executeCalls(calls);

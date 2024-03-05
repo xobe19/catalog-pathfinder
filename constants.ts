@@ -1,15 +1,12 @@
 export const GOERLI_ETH_URL = "https://rpc.ankr.com/eth_goerli";
 
-export const uniswapV2FactoryAddress =
-  "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-
 export const UniswapV2Factory_ADDRESS =
   "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 
 /* https://github.com/mds1/multicall/blob/a53ad011e302d8162f185d3393666f912767af5c/examples/typescript/constants.ts */
 
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
-export const UNISWAP_V2_ADDRESS = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+
 export const UNISWAP_V2_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 
 export const MULTICALL_ABI_ETHERS = [
