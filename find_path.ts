@@ -198,7 +198,12 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
   const amount = BigInt("6000000000000000000");
   const res = findPath(data.maker.address, data.wbtc.address, amount);
   const path = Array.from(res) as string[];
-  Simulator.swapUniswapV2("", amount, path, 0);
+  Simulator.swapUniswapV2(
+    "0x14cEff4bc1Ec64d7DD3c49538C10bBEBD4e1f1B5",
+    amount,
+    path,
+    0
+  );
 
   // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
   // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
