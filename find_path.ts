@@ -1,16 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { PairBigInt } from "./types";
+import { parseUnits } from "ethers";
 
 const prisma = new PrismaClient();
 
-function disp(addr: Set<String>, intermediate_path: Set<bigint>) {
+
+
+function disp(addr: Set<String>, intermediate_path: Set<bigint> ) {
   let len = addr.size;
   console.log(len);
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
   console.log("Addr                                        Amt");
-  for (let _ = 0; _ < len; _++) {
-    console.log(`${itr_1.next().value} , ${itr_2.next().value}`);
+  for(let _ = 0; _ < len; _++) {
+    console.log(`${itr_1.next().value} , ${(itr_2.next().value.toString())}`)
   }
 }
 
@@ -26,7 +29,19 @@ const data = {
     address: "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
     decimal: -1,
   },
+  maker: {
+    address: "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+    decimal: -1
+  }
 };
+
+
+function formatDecimal(x: bigint, decimal :number) {
+ let final_string = x.toString(); 
+ let indx = final_string.length - decimal;
+ final_string = final_string.slice(0, indx ) + "." + final_string.slice(indx);
+ return final_string;
+}
 
 async function getReservesFromDb(): Promise<PairBigInt[]> {
   const t = await prisma.pair.findMany();
@@ -183,10 +198,12 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
   // vlink and usdc
 
   console.log(
+    formatDecimal(
     findPath(
-      data.shibainu.address,
-      data.usdc.address,
-      BigInt("100000000000000000000000000")
+      data.maker.address,
+      data.wbtc.address,
+      BigInt("6000000000000000000")
+    ), 8 
     )
   );
   // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
