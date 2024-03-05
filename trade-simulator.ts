@@ -64,7 +64,7 @@ export class Simulator {
       "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     ];
 
-    const t1 = CalldataGenerator.swapTokens(amount, path, 18, whale, 0);
+    const t1 = CalldataGenerator.swapTokens(amount, path, whale, 0);
 
     const calls: any = [
       {

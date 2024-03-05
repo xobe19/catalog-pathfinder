@@ -8,7 +8,6 @@ export class CalldataGenerator {
   /**
    * @param amountIn - Amount of input tokens to send.
    * @param path - List of token address
-   * @param decimalOfTokenA - Decimal of Token A
    * @param walletAddress - sender address
    * @param amountOutMin -  Minimum amount of output tokens that must be received for the transaction not to revert.
    * @returns call data for transaction
@@ -17,7 +16,6 @@ export class CalldataGenerator {
   static swapTokens(
     amountIn: swapExactTokensForTokensArgs["amountIn"],
     path: swapExactTokensForTokensArgs["path"],
-    decimalOfTokenA: number,
     walletAddress: string,
     amountOutMin?: swapExactTokensForTokensArgs["amountOutMin"]
   ) {
