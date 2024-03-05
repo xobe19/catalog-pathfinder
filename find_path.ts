@@ -32,6 +32,10 @@ const data = {
     address: "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
     decimal: -1,
   },
+  elon: {
+    address: "0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3",
+    decimal: 18,
+  },
 };
 
 function formatDecimal(x: bigint, decimal: number) {
@@ -195,11 +199,11 @@ async function getReservesFromDb(): Promise<PairBigInt[]> {
 
   // vlink and usdc
 
-  const amount = BigInt("6000000000000000000");
-  const res = findPath(data.maker.address, data.wbtc.address, amount);
+  const amount = BigInt("60000000000000000000");
+  const res = findPath(data.usdc.address, data.wbtc.address, amount);
   const path = Array.from(res) as string[];
   Simulator.swapUniswapV2(
-    "0x14cEff4bc1Ec64d7DD3c49538C10bBEBD4e1f1B5",
+    "0xD6153F5af5679a75cC85D8974463545181f48772",
     amount,
     path,
     0
