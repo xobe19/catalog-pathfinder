@@ -1,0 +1,95 @@
+import { Contract, parseUnits } from "ethers";
+import { swapExactTokensForTokensArgs, transactionObj } from "./types";
+import { UNISWAP_V2_ROUTER } from "./constants";
+import { approveERC20Abi, swapABI } from "./abis";
+import { provider } from "./rpc_setup";
+
+export class CalldataGenerator {
+  /**
+   * @param amountIn - Amount of input tokens to send.
+   * @param path - List of token address
+   * @param decimalOfTokenA - Decimal of Token A
+   * @param walletAddress - sender address
+   * @param amountOutMin -  Minimum amount of output tokens that must be received for the transaction not to revert.
+   * @returns call data for transaction
+   */
+
+  static swapTokens(
+    amountIn: swapExactTokensForTokensArgs["amountIn"],
+    path: swapExactTokensForTokensArgs["path"],
+    decimalOfTokenA: number,
+    walletAddress: string,
+    amountOutMin?: swapExactTokensForTokensArgs["amountOutMin"]
+  ) {
+    try {
+      const contractInstance = new Contract(
+        UNISWAP_V2_ROUTER,
+        swapABI,
+        provider
+      );
+      const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+
+      const txInfo: swapExactTokensForTokensArgs = {
+        amountIn: parseUnits(amountIn.toString(), decimalOfTokenA),
+        amountOutMin: amountOutMin ? amountOutMin : 0,
+        path: path,
+        to: walletAddress,
+        deadline: deadline,
+      };
+
+      const calldata = contractInstance.interface.encodeFunctionData(
+        "swapExactTokensForTokens",
+        [
+          txInfo.amountIn,
+          txInfo.amountOutMin,
+          txInfo.path,
+          txInfo.to,
+          txInfo.deadline,
+        ]
+      );
+      const txObj: transactionObj = {
+        to: UNISWAP_V2_ROUTER,
+        data: calldata,
+        from: walletAddress,
+      };
+      return { calldata: calldata, txObj: txObj };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+   * Approves spending of ERC20 tokens by a spender address.
+   *
+   * @param ERC20_TOKEN - The address of the ERC20 token.
+   * @param spender_address - The address of the spender.
+   * @param amount - The amount of tokens to approve for spending.
+   * @returns The call data for the transaction.
+   */
+  static approveTokens(
+    ERC20_TOKEN: string,
+    spender_address: string,
+    amount: number,
+    from_address: string
+  ) {
+    try {
+      const contractInstance = new Contract(
+        ERC20_TOKEN,
+        approveERC20Abi,
+        provider
+      );
+      const calldata = contractInstance.interface.encodeFunctionData(
+        "approve",
+        [spender_address, amount]
+      );
+      const txObj: transactionObj = {
+        to: ERC20_TOKEN,
+        data: calldata,
+        from: from_address,
+      };
+      return { calldata: calldata, txObj: txObj };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}

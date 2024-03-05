@@ -24,3 +24,9 @@ export type swapExactTokensForTokensArgs = {
   to: string;
   deadline: number;
 };
+
+export type transactionObj = {
+  to: string;
+  data: string;
+  from: string;
+};
