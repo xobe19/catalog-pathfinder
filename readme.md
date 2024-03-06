@@ -73,6 +73,10 @@ findPath(
 let HOPS = 10;
 ```
 
+## Preprocessing:
+
+- Remove all pairs with shitcoins
+
 Shitcoins:
 USD: 0xd233d1f6fd11640081abb8db125f722b5dc729dc
 AMIGO: 0x761d38e5ddf6ccf6cf7c55759d5210750b5d60f3
