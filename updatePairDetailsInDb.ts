@@ -60,7 +60,7 @@ function getValuesStringFromExecuteCallsResult(
       token1Reserve: reserves[1].toString(),
     };
     ret.push(
-      `('${pair.address}', '${pair.token0Reserve}', '${pair.token0Reserve}')`
+      `('${pair.address}', '${pair.token0Reserve}', '${pair.token1Reserve}')`
     );
   }
 
