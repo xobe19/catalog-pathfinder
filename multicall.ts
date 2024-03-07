@@ -40,6 +40,28 @@ export function prepareCall(
   };
 }
 
+export function prepareCallVariable(
+  contractAddress: string,
+  variableName: string,
+  abi: any[]
+) {
+  const functionInterface = new Interface(abi);
+  const call: Call3 = {
+    target: contractAddress,
+    allowFailure: true,
+    callData: functionInterface.encodeFunctionData(variableName),
+  };
+  const decodeResult = (result: string) => {
+    return functionInterface.decodeFunctionResult(variableName, result);
+  };
+
+  return {
+    functionInterface,
+    call,
+    decodeResult,
+  };
+}
+
 export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
   const call3s = calls.map((call) => call.call);
 

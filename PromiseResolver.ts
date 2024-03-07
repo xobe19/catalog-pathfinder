@@ -9,7 +9,7 @@ export class PromiseResolver {
     const handleResultsFunction = async (results: any[]) => {
       console.log("Handled results:", results);
     };
-    await this.Resolve(promises, 100, 2, handleResultsFunction);
+    // await this.Resolve(promises, 100, 2, handleResultsFunction);
   }
 
   private static createPromiseBatch(size: number) {
@@ -26,16 +26,16 @@ export class PromiseResolver {
     return calls;
   }
 
-  static divideBatch(PromiseArray: any[], batchSize: number) {
+  static async divideBatch(PromiseArray: Promise<any[]>, batchSize: number) {
     const calls: any[] = [];
-    for (let i = 0; i < PromiseArray.length; i += batchSize) {
-      calls.push(PromiseArray.slice(i, i + batchSize));
+    for (let i = 0; i < (await PromiseArray).length; i += batchSize) {
+      calls.push((await PromiseArray).slice(i, i + batchSize));
     }
     return calls;
   }
 
   static async Resolve(
-    PromiseArray: any[],
+    PromiseArray: Promise<any[]>,
     batchSize: number,
     superBatchSize: number,
     handler: (results: any[]) => void
@@ -43,8 +43,8 @@ export class PromiseResolver {
     const batches = this.divideBatch(PromiseArray, batchSize);
     const superBatches: any[] = [];
 
-    for (let i = 0; i < batches.length; i += superBatchSize) {
-      superBatches.push(batches.slice(i, i + superBatchSize));
+    for (let i = 0; i < (await batches).length; i += superBatchSize) {
+      superBatches.push((await batches).slice(i, i + superBatchSize));
     }
 
     await Promise.all(superBatches.map((batch) => Promise.all(batch)))
