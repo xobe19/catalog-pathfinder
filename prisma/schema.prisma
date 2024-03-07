@@ -20,3 +20,16 @@ model Pair {
   token0Reserve String
   token1Reserve String
 }
+
+model PairV3 {
+  address        String @id
+  liquidity      String
+  sqrtPriceX96   String
+  fees           Int
+  token0Address  String
+  token0Decimals Int
+  token0Symbol   String
+  token1Address  String
+  token1Decimals Int
+  token1Symbol   String
+}

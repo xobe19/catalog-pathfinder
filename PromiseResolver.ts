@@ -26,7 +26,7 @@ export class PromiseResolver {
     return calls;
   }
 
-  private static divideBatch(PromiseArray: any[], batchSize: number) {
+  static divideBatch(PromiseArray: any[], batchSize: number) {
     const calls: any[] = [];
     for (let i = 0; i < PromiseArray.length; i += batchSize) {
       calls.push(PromiseArray.slice(i, i + batchSize));
@@ -34,7 +34,7 @@ export class PromiseResolver {
     return calls;
   }
 
-  private static async Resolve(
+  static async Resolve(
     PromiseArray: any[],
     batchSize: number,
     superBatchSize: number,
@@ -56,5 +56,3 @@ export class PromiseResolver {
       });
   }
 }
-
-PromiseResolver.main();
