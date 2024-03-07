@@ -107,25 +107,11 @@ print(
     )
 )
 
-# usdc_decimals = 6
-# weth_decimals = 18
-
-# usdc_to_eth = swap_get_amount_out_usdc_to_eth(
-#     sqrtp_cur=1287904652766006809775726356449899,
-#     liq=2205844668376370500,
-#     amount_in=1029,
-#     decimals_in=usdc_decimals,
-#     decimals_out=weth_decimals,
-# )
-
-# print(usdc_to_eth)
-
-# eth_to_usdc = swap_get_amount_out_eth_to_usdc(
-#     sqrtp_cur=1287904652766006809775726356449899,
-#     liq=2205844668376370500,
-#     amount_in=0.27124,
-#     decimals_in=weth_decimals,
-#     decimals_out=usdc_decimals,
-# )
-
-# print(eth_to_usdc)
+print(
+    get_amount_out(
+        pool,
+        token_in_symbol="USDC",
+        token_out_symbol="WETH",
+        amount_in=3912820,
+    )
+)
