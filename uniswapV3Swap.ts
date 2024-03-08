@@ -45,7 +45,7 @@ interface Pool {
   token1Symbol: string;
 }
 
-function getAmountOut(
+export function getAmountOut(
   pool: Pool,
   tokenInAddress: string,
   tokenOutAddress: string,
@@ -74,7 +74,7 @@ function getAmountOut(
     const amountOut = calcAmount1(liq, priceNext, sqrtpCur);
     // return amount_out / (10**decimals_out)
     return amountOut.div(Mathjs.bignumber(10).pow(decimalsOut));
-  } else if (tokenInAddress === token1Address) {
+  } else {
     // In: token1, Out: token0
     const decimalsIn = pool.token1Decimals;
     const decimalsOut = pool.token0Decimals;
@@ -106,20 +106,20 @@ const pool: Pool = {
   sqrtPriceX96: Mathjs.bignumber("1287904652766006809775726356449899"),
 };
 
-console.log(
-  getAmountOut(
-    pool,
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" /* WETH */,
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
-    Mathjs.bignumber(1039)
-  )
-);
+// console.log(
+//   getAmountOut(
+//     pool,
+//     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" /* WETH */,
+//     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
+//     Mathjs.bignumber(1039)
+//   )
+// );
 
-console.log(
-  getAmountOut(
-    pool,
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" /* WETH */,
-    Mathjs.bignumber(3912820)
-  )
-);
+// console.log(
+//   getAmountOut(
+//     pool,
+//     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
+//     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" /* WETH */,
+//     Mathjs.bignumber(3912820)
+//   )
+// );

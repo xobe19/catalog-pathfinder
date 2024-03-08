@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { Simulator } from "./trade-simulator";
-import { PairBigInt } from "./types";
+import * as Mathjs from "mathjs";
+import { PairBigInt, PairV3BigInt } from "./types";
+import { getAmountOut } from "./uniswapV3Swap";
 
 const prisma = new PrismaClient();
 
@@ -44,15 +45,34 @@ function formatDecimal(x: bigint, decimal: number) {
   return final_string;
 }
 
-async function getReservesFromDb(): Promise<PairBigInt[]> {
-  const t = await prisma.pair.findMany();
-  const toRet: PairBigInt[] = t.map((e) => ({
+async function getReservesFromDb(): Promise<(PairBigInt | PairV3BigInt)[]> {
+  const v2Pairs = await prisma.pair.findMany();
+  const v3Pairs = await prisma.pairV3.findMany();
+
+  const v3PairsBigInt: PairV3BigInt[] = v3Pairs.map((pair) => ({
+    address: pair.address.toLowerCase(),
+    liquidity: Mathjs.bignumber(pair.liquidity),
+    sqrtPriceX96: Mathjs.bignumber(pair.sqrtPriceX96),
+    fees: pair.fees,
+    token0Address: pair.token0Address.toLowerCase(),
+    token0Decimals: pair.token0Decimals,
+    token0Symbol: pair.token0Symbol,
+    token1Address: pair.token1Address.toLowerCase(),
+    token1Decimals: pair.token1Decimals,
+    token1Symbol: pair.token1Symbol,
+    version: 3,
+  }));
+
+  const toRet: (PairBigInt | PairV3BigInt)[] = v2Pairs.map((e) => ({
     address: e.address.toLowerCase(),
     token0Address: e.token0Address.toLowerCase(),
     token0Reserve: BigInt(e.token0Reserve).valueOf(),
     token1Address: e.token1Address.toLowerCase(),
     token1Reserve: BigInt(e.token1Reserve).valueOf(),
+    version: 2,
   }));
+  toRet.push(...v3PairsBigInt);
+
   return toRet;
 }
 
@@ -87,8 +107,8 @@ export async function findPath(
   outTokenAddress: string,
   inAmt: bigint
 ) {
-  let graph: {
-    [key in string]: [string, PairBigInt][];
+  const graph: {
+    [key in string]: [string, PairBigInt | PairV3BigInt][];
   } = {};
 
   const reserves = await getReservesFromDb();
@@ -146,14 +166,26 @@ export async function findPath(
         if (qd.path.has(neighbour)) continue;
         //   console.log(p.token0Reserve);
         //  console.log(p.token1Reserve);
-        let q1 = p.token0Reserve;
-        let q2 = p.token1Reserve;
-        if (p.token0Address != addr) {
-          let tmp = q2;
-          q2 = q1;
-          q1 = tmp;
+        let new_qty;
+        if (p.version === 2) {
+          let q1 = p.token0Reserve;
+          let q2 = p.token1Reserve;
+          if (p.token0Address != addr) {
+            let tmp = q2;
+            q2 = q1;
+            q1 = tmp;
+          }
+          new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
+        } else if (p.version === 3) {
+          new_qty = BigInt(
+            getAmountOut(
+              p,
+              addr,
+              neighbour,
+              Mathjs.bignumber(qd.qty.toString())
+            ).toString()
+          ).valueOf();
         }
-        let new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
 
         if (!new_qty) continue;
         if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
@@ -180,16 +212,19 @@ export async function findPath(
 
 // vlink and usdc
 async function main() {
-  const amount = BigInt("60000000000000000000");
+  const amount = BigInt("1000000000");
   const res = await findPath(data.usdc.address, data.wbtc.address, amount);
-  const path = Array.from(res) as string[];
-  Simulator.swapUniswapV2(
-    "0xD6153F5af5679a75cC85D8974463545181f48772",
-    amount,
-    path,
-    0
-  );
+  console.log(res);
+  // const path = Array.from(res) as string[];
+  // Simulator.swapUniswapV2(
+  //   "0xD6153F5af5679a75cC85D8974463545181f48772",
+  //   amount,
+  //   path,
+  //   0
+  // );
 }
+
+main();
 
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
