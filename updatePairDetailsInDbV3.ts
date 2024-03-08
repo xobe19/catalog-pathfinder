@@ -35,12 +35,28 @@ async function getMulticallBatch(
     const single = await executeCalls(i);
     res.push(single);
     console.log(
-      `pushed ${isLiquidityCall ? "liquidity" : "slot0"}`,
+      `fetched ${isLiquidityCall ? "liquidity" : "slot0"}`,
       batchIndex
     );
     batchIndex++;
   }
   return res;
+}
+
+function getValuesStringFromExecuteCallsResult(
+  pairAddress: string[],
+  newliquidity: string[],
+  newsqrtPriceX96: string[]
+): string[] {
+  const ret = [];
+
+  for (let i = 0; i < pairAddress.length; i++) {
+    const address = pairAddress[i];
+    const liquidity = newliquidity[i];
+    const sqrtPriceX96 = newsqrtPriceX96[i].split(",")[0];
+    ret.push(`('${address.toLowerCase()}', '${liquidity}', '${sqrtPriceX96}')`);
+  }
+  return ret;
 }
 
 async function main() {
@@ -59,7 +75,39 @@ async function main() {
     getMulticallBatch(address, 2500, false),
   ]);
 
-  console.log(liquidity);
+  const allliq: string[] = [];
+  const sqrtinfo: string[] = [];
+
+  for (let i = 0; i < liquidity.length; i++) {
+    const singleL = liquidity[i];
+    const singleP = slot0[i];
+
+    const lArray = singleL.map((value) => value.toString());
+    const sqrt96Array = singleP.map((value) => value.toString());
+
+    allliq.push(...lArray);
+    sqrtinfo.push(...sqrt96Array);
+  }
+
+  const resultToDb = getValuesStringFromExecuteCallsResult(
+    address,
+    allliq,
+    sqrtinfo
+  );
+
+  const toDbUpdateQuery = resultToDb.join(", ");
+
+  await prisma.$executeRawUnsafe(
+    `UPDATE "PairV3"
+    SET "liquidity" = new_values.new_liquidity,
+        "sqrtPriceX96" = new_values.new_sqrtPriceX96
+    FROM (
+        VALUES 
+            ${toDbUpdateQuery}
+        ) AS new_values (address, new_liquidity, new_sqrtPriceX96)
+    WHERE "PairV3".address = new_values.address`
+  );
+  console.log("db updated for pairV3");
 }
 
 main();

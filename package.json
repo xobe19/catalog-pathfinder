@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "ts-node fetch_pairs.ts",
     "populate-db": "ts-node fetchPairDetailsAndStoreToDb.ts",
-    "update-reserves": "ts-node updatePairDetailsInDb.ts"
+    "update-reserves": "ts-node updatePairDetailsInDb.ts",
+    "update-reserves-V3": "ts-node updatePairDetailsInDbV3.ts"
   },
   "author": "",
   "license": "ISC",
