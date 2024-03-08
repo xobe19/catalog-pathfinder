@@ -5,14 +5,25 @@ import { getAmountOut } from "./uniswapV3Swap";
 
 const prisma = new PrismaClient();
 
-function disp(addr: Set<String>, intermediate_path: Set<bigint>) {
+function disp(
+  addr: Set<String>,
+  intermediate_path: Set<bigint>,
+  token_from_pool: Set<string>
+) {
   let len = addr.size;
   console.log(len);
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
-  console.log("Addr                                        Amt");
+  let itr_3 = token_from_pool.values();
+  console.log(
+    "Addr                                        Amt              Pool"
+  );
   for (let _ = 0; _ < len; _++) {
-    console.log(`${itr_1.next().value} , ${itr_2.next().value.toString()}`);
+    console.log(
+      `${itr_1.next().value} , ${itr_2.next().value.toString()} , ${
+        itr_3.next().value
+      }`
+    );
   }
 }
 
@@ -112,6 +123,7 @@ export async function findPath(
   } = {};
 
   const reserves = await getReservesFromDb();
+  console.log(reserves.filter((e) => e.version === 3).length);
   console.log(`fetched ${reserves.length} rows from db`);
 
   for (let pair of reserves) {
@@ -122,44 +134,50 @@ export async function findPath(
     if (!graph[token1]) graph[token1] = [];
     graph[token1].push([token0, pair]);
   }
+  // console.log(graph[data.gooch.address]);
 
-  let q: {
+  let queue: {
     [key in string]: {
       path: Set<String>;
       qty: bigint;
       intermediate_path: Set<bigint>;
+      token_from_pool: Set<string>;
     };
   } = {};
 
-  q[inTokenAddress] = {
+  queue[inTokenAddress] = {
     path: new Set(),
     qty: inAmt,
     intermediate_path: new Set(),
+    token_from_pool: new Set(),
   };
-  q[inTokenAddress].path.add(inTokenAddress);
-  q[inTokenAddress].intermediate_path.add(inAmt);
+  queue[inTokenAddress].path.add(inTokenAddress);
+  queue[inTokenAddress].intermediate_path.add(inAmt);
+  queue[inTokenAddress].token_from_pool.add("-");
 
   let HOPS = 10;
 
   while (HOPS-- > 0) {
     // console.log(q);
-    let nq: {
+    let new_queue: {
       [key in string]: {
         path: Set<String>;
         qty: bigint;
         intermediate_path: Set<bigint>;
+        token_from_pool: Set<string>;
       };
     } = {};
 
-    for (let addr in q) {
-      nq[addr] = {
-        path: new Set(q[addr].path),
-        qty: q[addr].qty,
-        intermediate_path: new Set(q[addr].intermediate_path),
+    for (let addr in queue) {
+      new_queue[addr] = {
+        path: new Set(queue[addr].path),
+        qty: queue[addr].qty,
+        intermediate_path: new Set(queue[addr].intermediate_path),
+        token_from_pool: new Set(queue[addr].token_from_pool),
       };
     }
-    for (let addr in q) {
-      let qd = q[addr];
+    for (let addr in queue) {
+      let qd = queue[addr];
       //  console.log("neighbours");
       for (let [neighbour, p] of graph[addr]) {
         //  console.log(neighbour);
@@ -177,6 +195,7 @@ export async function findPath(
           }
           new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
         } else if (p.version === 3) {
+          console.log(3);
           new_qty = BigInt(
             getAmountOut(
               p,
@@ -186,28 +205,39 @@ export async function findPath(
             ).toString()
           ).valueOf();
         }
-
         if (!new_qty) continue;
-        if (nq[neighbour] === undefined || nq[neighbour].qty < new_qty) {
+        if (
+          new_queue[neighbour] === undefined ||
+          new_queue[neighbour].qty < new_qty
+        ) {
           let new_path = new Set(qd.path);
           let new_intermediate_path = new Set(qd.intermediate_path);
+          let new_token_from_pool = new Set(qd.token_from_pool);
           new_path.add(neighbour);
           new_intermediate_path.add(new_qty);
-          nq[neighbour] = {
+          new_token_from_pool.add(
+            p.version === 3 ? "Uniswap V3" : "Uniswap V2"
+          );
+          new_queue[neighbour] = {
             path: new_path,
             qty: new_qty,
             intermediate_path: new_intermediate_path,
+            token_from_pool: new_token_from_pool,
           };
         }
       }
       //  console.log("neigh end");
     }
-    q = nq;
+    queue = new_queue;
   }
 
   console.log("Optimal path");
-  disp(q[outTokenAddress].path, q[outTokenAddress].intermediate_path);
-  return q[outTokenAddress].path;
+  disp(
+    queue[outTokenAddress].path,
+    queue[outTokenAddress].intermediate_path,
+    queue[outTokenAddress].token_from_pool
+  );
+  return queue[outTokenAddress].path;
 }
 
 // vlink and usdc
