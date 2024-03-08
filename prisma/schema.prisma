@@ -33,3 +33,11 @@ model PairV3 {
   token1Decimals Int
   token1Symbol   String
 }
+
+model PairSushiSwap {
+  address       String @id
+  token0Address String
+  token1Address String
+  token0Reserve String
+  token1Reserve String
+}
