@@ -1,3 +1,9 @@
+## Run Start Script
+
+```bash
+./start.sh
+```
+
 ## Set up database
 
 ```bash

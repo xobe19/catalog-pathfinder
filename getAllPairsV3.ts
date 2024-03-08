@@ -53,9 +53,9 @@ async function main() {
         token0Address: e.token0.id,
         token0Decimals: parseInt(e.token0.decimals),
         token0Symbol: e.token0.symbol,
-        token1Address: e.token0.id,
-        token1Decimals: parseInt(e.token0.decimals),
-        token1Symbol: e.token0.symbol,
+        token1Address: e.token1.id,
+        token1Decimals: parseInt(e.token1.decimals),
+        token1Symbol: e.token1.symbol,
       };
     });
     await prisma.pairV3.createMany({
