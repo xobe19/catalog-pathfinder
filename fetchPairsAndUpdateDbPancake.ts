@@ -1,4 +1,4 @@
-import { Pair, PairSushiSwap, PrismaClient } from "@prisma/client";
+import { Pair, PairPancakeSwap, PrismaClient } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
@@ -59,7 +59,7 @@ function getMulticallBatch(
 function getPairDetailsFromExecuteCallsResult(
   pairAddress: string[],
   executeCallsResults: Result[]
-): PairSushiSwap[] {
+): PairPancakeSwap[] {
   const ret = [];
   // console.log(pairAddress);
   let j = 0;
@@ -71,7 +71,7 @@ function getPairDetailsFromExecuteCallsResult(
     const token0Address = (token0[0] as bigint).toString();
     const token1Address = (token1[0] as bigint).toString();
 
-    const pair: PairSushiSwap = {
+    const pair: PairPancakeSwap = {
       address: pairAddress[j++],
       token0Address,
       token1Address,
@@ -110,13 +110,13 @@ async function main() {
   console.time("service time");
 
   // ! clear the db first
-  await prisma.pairSushiSwap.deleteMany({});
+  await prisma.pairPancakeSwap.deleteMany({});
   console.log("db cleared");
 
   const pairAddressesFilePath = path.join(
     __dirname,
     "data",
-    "sushiswapPairs.txt"
+    "pancakeswapPairs.txt"
   );
 
   try {
@@ -141,7 +141,7 @@ async function main() {
 
       if (size === pairAddresses.length - i || resCount === promiseBatchSize) {
         const results = await Promise.all(promiseBatch);
-        await prisma.pairSushiSwap.createMany({
+        await prisma.pairPancakeSwap.createMany({
           data: toDbPairs(pairAddresses, results),
         });
         console.log(`rows in db: ${i + size}`);

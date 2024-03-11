@@ -41,3 +41,11 @@ model PairSushiSwap {
   token0Reserve String
   token1Reserve String
 }
+
+model PairPancakeSwap {
+  address       String @id
+  token0Address String
+  token1Address String
+  token0Reserve String
+  token1Reserve String
+}
