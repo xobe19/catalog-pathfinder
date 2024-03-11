@@ -16,13 +16,17 @@ function disp(
   console.log(
     "Addr                                        Amt              Pool"
   );
-  for (let _ = 0; _ < len; _++) {
-    console.log(
-      `${itr_1.next().value} , ${itr_2.next().value.toString()} , ${
-        token_from_pool[_]
-      }`
-    );
+  const ret = [];
+  for (let i = 0; i < len; i++) {
+    ret.push([
+      itr_1.next().value,
+      itr_2.next().value.toString(),
+      token_from_pool[i],
+    ]);
+
+    console.log(ret[ret.length - 1]);
   }
+  return ret;
 }
 
 const data = {
@@ -230,12 +234,11 @@ export async function findPath(
   }
 
   console.log("Optimal path");
-  disp(
+  return disp(
     queue[outTokenAddress].path,
     queue[outTokenAddress].intermediate_path,
     queue[outTokenAddress].token_from_pool
   );
-  return queue[outTokenAddress].path;
 }
 
 // vlink and usdc
@@ -251,8 +254,6 @@ async function main() {
   //   0
   // );
 }
-
-main();
 
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
