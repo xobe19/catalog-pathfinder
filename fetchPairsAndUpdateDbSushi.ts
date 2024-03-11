@@ -109,8 +109,8 @@ async function main() {
   console.log(new Date().toLocaleString());
   console.time("service time");
 
-  // clear the db first
-  //   await prisma.pair.deleteMany({});
+  // ! clear the db first
+  await prisma.pair.deleteMany({});
   console.log("db cleared");
 
   const pairAddressesFilePath = path.join(
