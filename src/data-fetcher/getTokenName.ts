@@ -6,7 +6,7 @@ import {
   symbolABIBytes64,
   upgradableContractABI,
 } from "./abis";
-import { provider } from "./rpc_setup";
+import { provider } from "../rpc_setup";
 
 export const ETHER_SCAN_API = process.env.ETHER_SCAN_API;
 if (!ETHER_SCAN_API)

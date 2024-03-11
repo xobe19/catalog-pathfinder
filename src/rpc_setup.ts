@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Contract, JsonRpcProvider } from "ethers";
-import { uniswapV2FactoryABI } from "./abis";
+import { uniswapV2FactoryABI } from "./data-fetcher/abis";
 import { GOERLI_ETH_URL, UniswapV2Factory_ADDRESS } from "./constants";
 dotenv.config();
 

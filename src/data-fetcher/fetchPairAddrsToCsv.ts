@@ -3,7 +3,7 @@
 // @ts-nocheck
 
 import { executeCalls, prepareCall } from "./multicall";
-import { UniswapV2Factory_ADDRESS } from "./constants";
+import { UniswapV2Factory_ADDRESS } from "../constants";
 import fs from "fs";
 import path from "path";
 

@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
+import { UNISWAP_V2_ROUTER } from "../constants";
+import { provider } from "../rpc_setup";
+import { swapExactTokensForTokensArgs } from "../types";
 import { CalldataGenerator } from "./calldataGenerator";
-import { UNISWAP_V2_ROUTER } from "./constants";
-import { provider } from "./rpc_setup";
-import { swapExactTokensForTokensArgs } from "./types";
 
 export class TradeExecutor {
   static async swapUniswapV2(

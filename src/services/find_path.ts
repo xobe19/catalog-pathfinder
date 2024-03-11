@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "./types";
-
-const prisma = new PrismaClient();
+import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
+import { prisma } from "./dbClient";
 
 function disp(
   addr: Set<String>,
@@ -9,13 +7,10 @@ function disp(
   token_from_pool: Array<string>
 ) {
   let len = addr.size;
-  console.log(len);
+
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
-  console.log(intermediate_path.size);
-  console.log(
-    "Addr                                        Amt              Pool"
-  );
+
   const ret = [];
   for (let i = 0; i < len; i++) {
     ret.push([
@@ -128,8 +123,7 @@ function getOut(
 export async function findPath(
   inTokenAddress: string,
   outTokenAddress: string,
-  inAmt: bigint,
-  dexes: Set<string>
+  inAmt: bigint
 ) {
   const graph: {
     [key in string]: [
@@ -150,7 +144,6 @@ export async function findPath(
     if (!graph[token1]) graph[token1] = [];
     graph[token1].push([token0, pair]);
   }
-  // console.log(graph[data.gooch.address]);
 
   let queue: {
     [key in string]: {
@@ -174,7 +167,6 @@ export async function findPath(
   let HOPS = 10;
 
   while (HOPS-- > 0) {
-    //   console.log(queue[data.weth.address]);
     let new_queue: {
       [key in string]: {
         path: Set<String>;
@@ -194,15 +186,8 @@ export async function findPath(
     }
     for (let addr in queue) {
       let qd = queue[addr];
-      //  console.log("neighbours");
       for (let [neighbour, p] of graph[addr]) {
-        //  console.log(neighbour);
         if (qd.path.has(neighbour)) continue;
-        if (!dexes.has(p.version)) {
-          continue;
-        }
-        //   console.log(p.token0Reserve);
-        //  console.log(p.token1Reserve);
         let new_qty;
         let q1 = p.token0Reserve;
         let q2 = p.token1Reserve;
@@ -232,69 +217,13 @@ export async function findPath(
           };
         }
       }
-      //  console.log("neigh end");
     }
     queue = new_queue;
   }
 
-  console.log("Optimal path");
-  const s = disp(
+  return disp(
     queue[outTokenAddress].path,
     queue[outTokenAddress].intermediate_path,
     queue[outTokenAddress].token_from_pool
   );
 }
-
-export async function findPaths(
-  inTokenAddress: string,
-  outTokenAddress: string,
-  inAmt: bigint
-) {
-  let boundFunction = findPath.bind(
-    null,
-    inTokenAddress,
-    outTokenAddress,
-    inAmt
-  );
-  let a = new Set<string>();
-  let b = new Set<string>();
-  let c = new Set<string>();
-  let d = new Set<string>();
-  a.add("Uniswap V2");
-  b.add("Sushi Swap");
-  c.add("Pancake Swap");
-  d.add("Uniswap V2");
-  d.add("Sushi Swap");
-  d.add("Pancake Swap");
-
-  return [
-    await boundFunction(a),
-    await boundFunction(b),
-    await boundFunction(c),
-    await boundFunction(d),
-  ];
-}
-
-// vlink and usdc
-async function main() {
-  const amount = BigInt("1000000000");
-  const res = await findPaths(data.usdc.address, data.usdt.address, amount);
-  console.log(res);
-  // const path = Array.from(res) as string[];
-  // Simulator.swapUniswapV2(
-  //   "0xD6153F5af5679a75cC85D8974463545181f48772",
-  //   amount,
-  //   path,
-  //   0
-  // );
-}
-
-// main();
-
-// console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
-// let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
-// while (curr != "") {
-//   console.log(curr);
-//   let prv = prev[curr];
-//   curr = prv;
-// }

@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { Contract, Interface, JsonRpcProvider } from "ethers";
-import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "./constants";
-import { Call3 } from "./types";
+import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "../constants";
+import { Call3 } from "../types";
+
 dotenv.config();
 
 // Setup the provider
