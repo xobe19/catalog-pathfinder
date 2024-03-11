@@ -1,7 +1,6 @@
 {
   "name": "catalog-pathfinder",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
     "deploy": "tsc && NODE_DEBUG=gh-pages node deploy.js",
     "start": "node server.js",
