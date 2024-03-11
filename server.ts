@@ -62,9 +62,9 @@ const SERVER_PORT = parseInt(process.env.SERVER_PORT!);
 if (!SERVER_PORT)
   throw new Error("Please set the SERVER_PORT environment variable.");
 
-const LOCAL_IP = process.env.LOCAL_IP;
-if (!LOCAL_IP) throw new Error("Please set the LOCAL_IP environment variable.");
+// const LOCAL_IP = process.env.LOCAL_IP;
+// if (!LOCAL_IP) throw new Error("Please set the LOCAL_IP environment variable.");
 
-app.listen(SERVER_PORT, LOCAL_IP, () => {
-  console.log(`Server running at http://${LOCAL_IP}:${SERVER_PORT}`);
+app.listen(SERVER_PORT, () => {
+  console.log(`server running`);
 });
