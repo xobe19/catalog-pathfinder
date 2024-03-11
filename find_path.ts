@@ -128,7 +128,8 @@ function getOut(
 export async function findPath(
   inTokenAddress: string,
   outTokenAddress: string,
-  inAmt: bigint
+  inAmt: bigint,
+  dexes: Set<string>
 ) {
   const graph: {
     [key in string]: [
@@ -197,6 +198,9 @@ export async function findPath(
       for (let [neighbour, p] of graph[addr]) {
         //  console.log(neighbour);
         if (qd.path.has(neighbour)) continue;
+        if (!dexes.has(p.version)) {
+          continue;
+        }
         //   console.log(p.token0Reserve);
         //  console.log(p.token1Reserve);
         let new_qty;
@@ -241,10 +245,40 @@ export async function findPath(
   );
 }
 
+export function findPaths(
+  inTokenAddress: string,
+  outTokenAddress: string,
+  inAmt: bigint
+) {
+  let boundFunction = findPath.bind(
+    null,
+    inTokenAddress,
+    outTokenAddress,
+    inAmt
+  );
+  let a = new Set<string>();
+  let b = new Set<string>();
+  let c = new Set<string>();
+  let d = new Set<string>();
+  a.add("Uniswap V2");
+  b.add("Sushi Swap");
+  c.add("Pancake Swap");
+  d.add("Uniswap V2");
+  d.add("Sushi Swap");
+  d.add("Pancake Swap");
+
+  return [
+    boundFunction(a),
+    boundFunction(b),
+    boundFunction(c),
+    boundFunction(d),
+  ];
+}
+
 // vlink and usdc
 async function main() {
   const amount = BigInt("1000000000");
-  const res = await findPath(data.usdc.address, data.usdt.address, amount);
+  const res = await findPaths(data.usdc.address, data.usdt.address, amount);
   console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(
@@ -254,6 +288,8 @@ async function main() {
   //   0
   // );
 }
+
+main();
 
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
