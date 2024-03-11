@@ -9,13 +9,9 @@ function disp(
   token_from_pool: Array<string>
 ) {
   let len = addr.size;
-  console.log(len);
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
-  console.log(intermediate_path.size);
-  console.log(
-    "Addr                                        Amt              Pool"
-  );
+
   const ret = [];
   for (let i = 0; i < len; i++) {
     ret.push([
@@ -24,7 +20,7 @@ function disp(
       token_from_pool[i],
     ]);
 
-    console.log(ret[ret.length - 1]);
+    // console.log(ret[ret.length - 1]);
   }
   return ret;
 }
@@ -129,27 +125,15 @@ export async function findPath(
   inTokenAddress: string,
   outTokenAddress: string,
   inAmt: bigint,
-  dexes: Set<string>
-) {
-  const graph: {
+  graph: {
     [key in string]: [
       string,
       PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
     ][];
-  } = {};
+  },
 
-  const reserves = await getReservesFromDb();
-
-  console.log(`fetched ${reserves.length} rows from db`);
-
-  for (let pair of reserves) {
-    let token0 = pair.token0Address;
-    let token1 = pair.token1Address;
-    if (!graph[token0]) graph[token0] = [];
-    graph[token0].push([token1, pair]);
-    if (!graph[token1]) graph[token1] = [];
-    graph[token1].push([token0, pair]);
-  }
+  dexes: Set<string>
+) {
   // console.log(graph[data.gooch.address]);
 
   let queue: {
@@ -237,12 +221,12 @@ export async function findPath(
     queue = new_queue;
   }
 
-  console.log("Optimal path");
   const s = disp(
     queue[outTokenAddress].path,
     queue[outTokenAddress].intermediate_path,
     queue[outTokenAddress].token_from_pool
   );
+  return s;
 }
 
 export async function findPaths(
@@ -250,11 +234,31 @@ export async function findPaths(
   outTokenAddress: string,
   inAmt: bigint
 ) {
+  const graph: {
+    [key in string]: [
+      string,
+      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
+    ][];
+  } = {};
+
+  const reserves = await getReservesFromDb();
+
+  console.log(`fetched ${reserves.length} rows from db`);
+
+  for (let pair of reserves) {
+    let token0 = pair.token0Address;
+    let token1 = pair.token1Address;
+    if (!graph[token0]) graph[token0] = [];
+    graph[token0].push([token1, pair]);
+    if (!graph[token1]) graph[token1] = [];
+    graph[token1].push([token0, pair]);
+  }
   let boundFunction = findPath.bind(
     null,
     inTokenAddress,
     outTokenAddress,
-    inAmt
+    inAmt,
+    graph
   );
   let a = new Set<string>();
   let b = new Set<string>();
@@ -289,7 +293,7 @@ async function main() {
   // );
 }
 
-// main();
+main();
 
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
