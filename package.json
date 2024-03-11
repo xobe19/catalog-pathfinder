@@ -1,10 +1,14 @@
 {
-  "name": "uniswap_v2_pathfinder",
+  "name": "catalog-pathfinder",
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "nodemon server.ts",
-    "populate-db": "ts-node fetchPairDetailsAndStoreToDb.ts",
+    "build": "tsc --build",
+    "start": "node dist/server.js",
+    "populate-db": "ts-node fetchPairDetailsAndStoreToDb.ts &&ts-node fetchPairsAndUpdateDbSushi.ts && ts-node fetchPairsAndUpdateDbPancake.ts",
+    "populate-db-uniswap": "ts-node fetchPairDetailsAndStoreToDb.ts",
+    "populate-db-sushiSwap": "ts-node fetchPairsAndUpdateDbSushi.ts",
+    "populate-db-panCakeSwap": "ts-node fetchPairsAndUpdateDbPancake.ts",
     "populate-db-v3": "ts-node getAllPairsV3.ts",
     "update-reserves": "ts-node updatePairDetailsInDb.ts",
     "update-reserves-V3": "ts-node updatePairDetailsInDbV3.ts"
