@@ -58,10 +58,10 @@ export function getAmountOut(
 
   if (tokenInAddress === token0Address) {
     // In: token0, Out: token1
-    const decimalsIn = pool.token0Decimals;
-    const decimalsOut = pool.token1Decimals;
+    const decimalsIn = 1;
+    const decimalsOut = 1;
     // amount_in *= 10**decimals_in
-    amountIn = amountIn.mul(Mathjs.bignumber(10).pow(decimalsIn));
+    //  amountIn = amountIn.mul(Mathjs.bignumber(10).pow(decimalsIn));
     // price_next = int((liq * q96 * sqrtp_cur) // (liq * q96 + amount_in * sqrtp_cur))
     const priceNext = liq
       .mul(q96)
@@ -73,7 +73,8 @@ export function getAmountOut(
     // amount_out = calc_amount1(liq, price_next, sqrtp_cur)
     const amountOut = calcAmount1(liq, priceNext, sqrtpCur);
     // return amount_out / (10**decimals_out)
-    return amountOut.div(Mathjs.bignumber(10).pow(decimalsOut));
+    //   return amountOut.div(Mathjs.bignumber(10).pow(decimalsOut));
+    return amountOut;
   } else {
     // In: token1, Out: token0
     const decimalsIn = pool.token1Decimals;
@@ -89,21 +90,22 @@ export function getAmountOut(
     // amount_out = calc_amount0(liq, price_next, sqrtp_cur)
     const amountOut = calcAmount0(liq, priceNext, sqrtpCur);
     // return amount_out / (10**decimals_out)
-    return amountOut.div(Mathjs.bignumber(10).pow(decimalsOut));
+    //   return amountOut.div(Mathjs.bignumber(10).pow(decimalsOut));
+    return amountOut;
   }
 }
 
 const pool: Pool = {
   address: "",
-  fees: 3000,
-  token0Symbol: "USDC",
-  token0Address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  token0Decimals: 6,
-  token1Symbol: "WETH",
-  token1Address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  token1Decimals: 18,
-  liquidity: Mathjs.bignumber("2205844668376370500"),
-  sqrtPriceX96: Mathjs.bignumber("1287904652766006809775726356449899"),
+  fees: 10000,
+  token1Symbol: "USDC",
+  token1Address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  token1Decimals: 6,
+  token0Symbol: "PSYOP",
+  token0Address: "0x3007083eaa95497cd6b2b809fb97b6a30bdf53d3",
+  token0Decimals: 18,
+  liquidity: Mathjs.bignumber("381503007888703518"),
+  sqrtPriceX96: Mathjs.bignumber("1039189444078413778664"),
 };
 
 // console.log(
@@ -115,11 +117,11 @@ const pool: Pool = {
 //   )
 // );
 
-// console.log(
-//   getAmountOut(
-//     pool,
-//     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
-//     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" /* WETH */,
-//     Mathjs.bignumber(3912820)
-//   )
-// );
+console.log(
+  getAmountOut(
+    pool,
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" /* USDC */,
+    "0x3007083eaa95497cd6b2b809fb97b6a30bdf53d3",
+    Mathjs.bignumber("1000000000")
+  )
+);

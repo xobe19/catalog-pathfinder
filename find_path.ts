@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import * as Mathjs from "mathjs";
-import { PairBigInt, PairV3BigInt } from "./types";
+import { PairBigInt, SushiPairBigInt } from "./types";
 import { getAmountOut } from "./uniswapV3Swap";
 
 const prisma = new PrismaClient();
@@ -8,20 +8,20 @@ const prisma = new PrismaClient();
 function disp(
   addr: Set<String>,
   intermediate_path: Set<bigint>,
-  token_from_pool: Set<string>
+  token_from_pool: Array<string>
 ) {
   let len = addr.size;
   console.log(len);
   let itr_1 = addr.values();
   let itr_2 = intermediate_path.values();
-  let itr_3 = token_from_pool.values();
+  console.log(intermediate_path.size);
   console.log(
     "Addr                                        Amt              Pool"
   );
   for (let _ = 0; _ < len; _++) {
     console.log(
       `${itr_1.next().value} , ${itr_2.next().value.toString()} , ${
-        itr_3.next().value
+        token_from_pool[_]
       }`
     );
   }
@@ -56,33 +56,29 @@ function formatDecimal(x: bigint, decimal: number) {
   return final_string;
 }
 
-async function getReservesFromDb(): Promise<(PairBigInt | PairV3BigInt)[]> {
+async function getReservesFromDb(): Promise<(PairBigInt | SushiPairBigInt)[]> {
   const v2Pairs = await prisma.pair.findMany();
-  const v3Pairs = await prisma.pairV3.findMany();
+  const sushiPairs = await prisma.pairSushiSwap.findMany();
 
-  const v3PairsBigInt: PairV3BigInt[] = v3Pairs.map((pair) => ({
-    address: pair.address.toLowerCase(),
-    liquidity: Mathjs.bignumber(pair.liquidity),
-    sqrtPriceX96: Mathjs.bignumber(pair.sqrtPriceX96),
-    fees: pair.fees,
-    token0Address: pair.token0Address.toLowerCase(),
-    token0Decimals: pair.token0Decimals,
-    token0Symbol: pair.token0Symbol,
-    token1Address: pair.token1Address.toLowerCase(),
-    token1Decimals: pair.token1Decimals,
-    token1Symbol: pair.token1Symbol,
-    version: 3,
-  }));
-
-  const toRet: (PairBigInt | PairV3BigInt)[] = v2Pairs.map((e) => ({
+  const toRet: (PairBigInt | SushiPairBigInt)[] = v2Pairs.map((e) => ({
     address: e.address.toLowerCase(),
     token0Address: e.token0Address.toLowerCase(),
     token0Reserve: BigInt(e.token0Reserve).valueOf(),
     token1Address: e.token1Address.toLowerCase(),
     token1Reserve: BigInt(e.token1Reserve).valueOf(),
-    version: 2,
+    version: "Uniswap V2",
   }));
-  toRet.push(...v3PairsBigInt);
+
+  const sushiPairsMapped: SushiPairBigInt[] = sushiPairs.map((e) => ({
+    address: e.address.toLowerCase(),
+    token0Address: e.token0Address.toLowerCase(),
+    token0Reserve: BigInt(e.token0Reserve).valueOf(),
+    token1Address: e.token1Address.toLowerCase(),
+    token1Reserve: BigInt(e.token1Reserve).valueOf(),
+    version: "Sushi Swap",
+  }));
+
+  toRet.push(...sushiPairsMapped);
 
   return toRet;
 }
@@ -119,11 +115,11 @@ export async function findPath(
   inAmt: bigint
 ) {
   const graph: {
-    [key in string]: [string, PairBigInt | PairV3BigInt][];
+    [key in string]: [string, PairBigInt | SushiPairBigInt][];
   } = {};
 
   const reserves = await getReservesFromDb();
-  console.log(reserves.filter((e) => e.version === 3).length);
+
   console.log(`fetched ${reserves.length} rows from db`);
 
   for (let pair of reserves) {
@@ -141,7 +137,7 @@ export async function findPath(
       path: Set<String>;
       qty: bigint;
       intermediate_path: Set<bigint>;
-      token_from_pool: Set<string>;
+      token_from_pool: Array<string>;
     };
   } = {};
 
@@ -149,22 +145,22 @@ export async function findPath(
     path: new Set(),
     qty: inAmt,
     intermediate_path: new Set(),
-    token_from_pool: new Set(),
+    token_from_pool: new Array(),
   };
   queue[inTokenAddress].path.add(inTokenAddress);
   queue[inTokenAddress].intermediate_path.add(inAmt);
-  queue[inTokenAddress].token_from_pool.add("-");
+  queue[inTokenAddress].token_from_pool.push("-");
 
   let HOPS = 10;
 
   while (HOPS-- > 0) {
-    // console.log(q);
+    //   console.log(queue[data.weth.address]);
     let new_queue: {
       [key in string]: {
         path: Set<String>;
         qty: bigint;
         intermediate_path: Set<bigint>;
-        token_from_pool: Set<string>;
+        token_from_pool: Array<string>;
       };
     } = {};
 
@@ -173,7 +169,7 @@ export async function findPath(
         path: new Set(queue[addr].path),
         qty: queue[addr].qty,
         intermediate_path: new Set(queue[addr].intermediate_path),
-        token_from_pool: new Set(queue[addr].token_from_pool),
+        token_from_pool: [...queue[addr].token_from_pool],
       };
     }
     for (let addr in queue) {
@@ -185,26 +181,14 @@ export async function findPath(
         //   console.log(p.token0Reserve);
         //  console.log(p.token1Reserve);
         let new_qty;
-        if (p.version === 2) {
-          let q1 = p.token0Reserve;
-          let q2 = p.token1Reserve;
-          if (p.token0Address != addr) {
-            let tmp = q2;
-            q2 = q1;
-            q1 = tmp;
-          }
-          new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
-        } else if (p.version === 3) {
-          console.log(3);
-          new_qty = BigInt(
-            getAmountOut(
-              p,
-              addr,
-              neighbour,
-              Mathjs.bignumber(qd.qty.toString())
-            ).toString()
-          ).valueOf();
+        let q1 = p.token0Reserve;
+        let q2 = p.token1Reserve;
+        if (p.token0Address != addr) {
+          let tmp = q2;
+          q2 = q1;
+          q1 = tmp;
         }
+        new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
         if (!new_qty) continue;
         if (
           new_queue[neighbour] === undefined ||
@@ -212,12 +196,11 @@ export async function findPath(
         ) {
           let new_path = new Set(qd.path);
           let new_intermediate_path = new Set(qd.intermediate_path);
-          let new_token_from_pool = new Set(qd.token_from_pool);
+          let new_token_from_pool = [...qd.token_from_pool];
           new_path.add(neighbour);
           new_intermediate_path.add(new_qty);
-          new_token_from_pool.add(
-            p.version === 3 ? "Uniswap V3" : "Uniswap V2"
-          );
+          new_token_from_pool.push(p.version);
+
           new_queue[neighbour] = {
             path: new_path,
             qty: new_qty,
@@ -243,7 +226,7 @@ export async function findPath(
 // vlink and usdc
 async function main() {
   const amount = BigInt("1000000000");
-  const res = await findPath(data.usdc.address, data.wbtc.address, amount);
+  const res = await findPath(data.usdc.address, data.gooch.address, amount);
   console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(

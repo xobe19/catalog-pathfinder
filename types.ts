@@ -1,4 +1,4 @@
-import { Pair, PairV3 } from "@prisma/client";
+import { Pair, PairSushiSwap, PairV3 } from "@prisma/client";
 import * as Mathjs from "mathjs";
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
@@ -16,15 +16,15 @@ export type PairBigInt = Modify<
     token0Reserve: bigint;
     token1Reserve: bigint;
   }
-> & { version: 2 };
+> & { version: "Uniswap V2" };
 
-export type PairV3BigInt = Modify<
-  PairV3,
+export type SushiPairBigInt = Modify<
+  PairSushiSwap,
   {
-    liquidity: Mathjs.BigNumber;
-    sqrtPriceX96: Mathjs.BigNumber;
+    token0Reserve: bigint;
+    token1Reserve: bigint;
   }
-> & { version: 3 };
+> & { version: "Sushi Swap" };
 
 export type swapExactTokensForTokensArgs = {
   amountIn: bigint;
