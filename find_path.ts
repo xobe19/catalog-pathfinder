@@ -238,14 +238,14 @@ export async function findPath(
   }
 
   console.log("Optimal path");
-  return disp(
+  const s = disp(
     queue[outTokenAddress].path,
     queue[outTokenAddress].intermediate_path,
     queue[outTokenAddress].token_from_pool
   );
 }
 
-export function findPaths(
+export async function findPaths(
   inTokenAddress: string,
   outTokenAddress: string,
   inAmt: bigint
@@ -268,10 +268,10 @@ export function findPaths(
   d.add("Pancake Swap");
 
   return [
-    boundFunction(a),
-    boundFunction(b),
-    boundFunction(c),
-    boundFunction(d),
+    await boundFunction(a),
+    await boundFunction(b),
+    await boundFunction(c),
+    await boundFunction(d),
   ];
 }
 
@@ -289,7 +289,7 @@ async function main() {
   // );
 }
 
-main();
+// main();
 
 // console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
 // let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";

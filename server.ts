@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express, { Request } from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { findPath } from "./find_path";
+import { findPaths } from "./find_path";
 dotenv.config();
 
 const specs = swaggerJsdoc({
@@ -45,7 +45,7 @@ app.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
     const {
       body: { tokenInAddress, tokenOutAddress, amount },
     } = req;
-    const path = await findPath(
+    const path = await findPaths(
       tokenInAddress,
       tokenOutAddress,
       BigInt(amount)
