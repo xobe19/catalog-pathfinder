@@ -16,8 +16,6 @@ subProcess.exec(lastCommitCommand, (error, stdout, stderr) => {
     {
       message: `build from ${stdout}`,
       dotfiles: true,
-      branch: "deploy",
-      lastCommitCommand,
     },
     (err) => {
       if (err) {
