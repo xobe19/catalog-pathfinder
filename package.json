@@ -2,7 +2,8 @@
   "name": "catalog-pathfinder",
   "version": "1.0.0",
   "scripts": {
-    "deploy": "tsc && NODE_DEBUG=gh-pages node deploy.js",
+    "build": "tsc",
+    "deploy": "NODE_DEBUG=gh-pages node deploy.js",
     "start": "node server.js",
     "populate-db": "ts-node fetchPairDetailsAndStoreToDb.ts &&ts-node fetchPairsAndUpdateDbSushi.ts && ts-node fetchPairsAndUpdateDbPancake.ts",
     "populate-db-uniswap": "ts-node fetchPairDetailsAndStoreToDb.ts",
