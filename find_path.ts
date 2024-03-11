@@ -1,7 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import * as Mathjs from "mathjs";
-import { PairBigInt, SushiPairBigInt } from "./types";
-import { getAmountOut } from "./uniswapV3Swap";
+import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "./types";
 
 const prisma = new PrismaClient();
 
@@ -56,18 +54,22 @@ function formatDecimal(x: bigint, decimal: number) {
   return final_string;
 }
 
-async function getReservesFromDb(): Promise<(PairBigInt | SushiPairBigInt)[]> {
+async function getReservesFromDb(): Promise<
+  (PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt)[]
+> {
   const v2Pairs = await prisma.pair.findMany();
   const sushiPairs = await prisma.pairSushiSwap.findMany();
+  const pancakePairs = await prisma.pairPancakeSwap.findMany();
 
-  const toRet: (PairBigInt | SushiPairBigInt)[] = v2Pairs.map((e) => ({
-    address: e.address.toLowerCase(),
-    token0Address: e.token0Address.toLowerCase(),
-    token0Reserve: BigInt(e.token0Reserve).valueOf(),
-    token1Address: e.token1Address.toLowerCase(),
-    token1Reserve: BigInt(e.token1Reserve).valueOf(),
-    version: "Uniswap V2",
-  }));
+  const toRet: (PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt)[] =
+    v2Pairs.map((e) => ({
+      address: e.address.toLowerCase(),
+      token0Address: e.token0Address.toLowerCase(),
+      token0Reserve: BigInt(e.token0Reserve).valueOf(),
+      token1Address: e.token1Address.toLowerCase(),
+      token1Reserve: BigInt(e.token1Reserve).valueOf(),
+      version: "Uniswap V2",
+    }));
 
   const sushiPairsMapped: SushiPairBigInt[] = sushiPairs.map((e) => ({
     address: e.address.toLowerCase(),
@@ -78,7 +80,17 @@ async function getReservesFromDb(): Promise<(PairBigInt | SushiPairBigInt)[]> {
     version: "Sushi Swap",
   }));
 
+  const PanCakePairsMapped: PancakeSwapPairBigInt[] = pancakePairs.map((e) => ({
+    address: e.address.toLowerCase(),
+    token0Address: e.token0Address.toLowerCase(),
+    token0Reserve: BigInt(e.token0Reserve).valueOf(),
+    token1Address: e.token1Address.toLowerCase(),
+    token1Reserve: BigInt(e.token1Reserve).valueOf(),
+    version: "Pancake Swap",
+  }));
+
   toRet.push(...sushiPairsMapped);
+  toRet.push(...PanCakePairsMapped);
 
   return toRet;
 }
@@ -115,7 +127,10 @@ export async function findPath(
   inAmt: bigint
 ) {
   const graph: {
-    [key in string]: [string, PairBigInt | SushiPairBigInt][];
+    [key in string]: [
+      string,
+      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
+    ][];
   } = {};
 
   const reserves = await getReservesFromDb();
@@ -226,7 +241,7 @@ export async function findPath(
 // vlink and usdc
 async function main() {
   const amount = BigInt("1000000000");
-  const res = await findPath(data.usdc.address, data.gooch.address, amount);
+  const res = await findPath(data.usdc.address, data.usdt.address, amount);
   console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(
