@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon server.ts",
-    "build": "tsc && cp -r package* prisma dist/ && npx prisma generate",
+    "build": "tsc && cp -r package* compose.yaml prisma dist/ && npx prisma generate",
     "deploy": "NODE_DEBUG=gh-pages node deploy.js",
     "start": "node server.js",
     "populate-db": "ts-node src/data-fetcher/fetchPairDetailsAndStoreToDb.ts && ts-node src/data-fetcher/fetchPairsAndUpdateDbSushi.ts && ts-node src/data-fetcher/fetchPairsAndUpdateDbPancake.ts",
