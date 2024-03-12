@@ -1,6 +1,6 @@
-import { Router, Request } from "express";
+import { Request, Router } from "express";
+import { findPaths } from "./services/find_path";
 import { QuoteBody } from "./types";
-import { findPath } from "./services/find_path";
 
 export const router = Router();
 
@@ -21,7 +21,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
       body: { tokenInAddress, tokenOutAddress, amount },
     } = req;
     console.log(req.body);
-    const path = await findPath(
+    const path = await findPaths(
       tokenInAddress,
       tokenOutAddress,
       BigInt(amount)
