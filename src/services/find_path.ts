@@ -177,6 +177,7 @@ export async function findPath(
       let qd = queue[addr];
       for (let [neighbour, p] of graph[addr]) {
         if (qd.path.has(neighbour)) continue;
+        if (!dexes.has(p.version)) continue;
         let new_qty;
         let q1 = p.token0Reserve;
         let q2 = p.token1Reserve;
@@ -280,3 +281,5 @@ async function main() {
   //   0
   // );
 }
+
+main();
