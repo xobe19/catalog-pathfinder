@@ -1,8 +1,8 @@
-import { Contract, parseUnits } from "ethers";
-import { swapExactTokensForTokensArgs, transactionObj } from "./types";
-import { UNISWAP_V2_ROUTER } from "./constants";
-import { approveERC20Abi, swapABI } from "./abis";
-import { provider } from "./rpc_setup";
+import { Contract } from "ethers";
+import { provider } from "../rpc_setup";
+import { UNISWAP_V2_ROUTER } from "../constants";
+import { approveERC20Abi, swapABI } from "../data-fetcher/abis";
+import { swapExactTokensForTokensArgs, transactionObj } from "../types";
 
 export class CalldataGenerator {
   /**

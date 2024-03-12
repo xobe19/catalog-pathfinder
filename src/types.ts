@@ -1,8 +1,13 @@
-import { Pair, PairPancakeSwap, PairSushiSwap, PairV3 } from "@prisma/client";
-import * as Mathjs from "mathjs";
+import { Pair, PairPancakeSwap, PairSushiSwap } from "@prisma/client";
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
 type Modify<T, R> = Omit<T, keyof R> & R;
+
+export interface QuoteBody {
+  tokenInAddress: string;
+  tokenOutAddress: string;
+  amount: string;
+}
 
 export interface Call3 {
   target: string;

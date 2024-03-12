@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "./types";
-
-const prisma = new PrismaClient();
+import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
+import { prisma } from "./dbClient";
 
 function disp(
   addr: Set<String>,
@@ -158,7 +156,6 @@ export async function findPath(
   let HOPS = 10;
 
   while (HOPS-- > 0) {
-    //   console.log(queue[data.weth.address]);
     let new_queue: {
       [key in string]: {
         path: Set<String>;
@@ -178,15 +175,8 @@ export async function findPath(
     }
     for (let addr in queue) {
       let qd = queue[addr];
-      //  console.log("neighbours");
       for (let [neighbour, p] of graph[addr]) {
-        //  console.log(neighbour);
         if (qd.path.has(neighbour)) continue;
-        if (!dexes.has(p.version)) {
-          continue;
-        }
-        //   console.log(p.token0Reserve);
-        //  console.log(p.token1Reserve);
         let new_qty;
         let q1 = p.token0Reserve;
         let q2 = p.token1Reserve;
@@ -216,7 +206,6 @@ export async function findPath(
           };
         }
       }
-      //  console.log("neigh end");
     }
     queue = new_queue;
   }
@@ -279,7 +268,6 @@ export async function findPaths(
   ];
 }
 
-// vlink and usdc
 async function main() {
   const amount = BigInt("1000000000");
   const res = await findPaths(data.usdc.address, data.usdt.address, amount);
@@ -292,13 +280,3 @@ async function main() {
   //   0
   // );
 }
-
-main();
-
-// console.log(inPath["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"]);
-// let curr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
-// while (curr != "") {
-//   console.log(curr);
-//   let prv = prev[curr];
-//   curr = prv;
-// }

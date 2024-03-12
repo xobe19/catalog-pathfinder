@@ -2,41 +2,39 @@
   "name": "catalog-pathfinder",
   "version": "1.0.0",
   "scripts": {
+    "dev": "nodemon server.ts",
     "build": "tsc && cp package* dist/",
     "deploy": "NODE_DEBUG=gh-pages node deploy.js",
     "start": "node server.js",
-    "populate-db": "ts-node fetchPairDetailsAndStoreToDb.ts &&ts-node fetchPairsAndUpdateDbSushi.ts && ts-node fetchPairsAndUpdateDbPancake.ts",
-    "populate-db-uniswap": "ts-node fetchPairDetailsAndStoreToDb.ts",
-    "populate-db-sushiSwap": "ts-node fetchPairsAndUpdateDbSushi.ts",
-    "populate-db-panCakeSwap": "ts-node fetchPairsAndUpdateDbPancake.ts",
-    "populate-db-v3": "ts-node getAllPairsV3.ts",
-    "update-reserves": "ts-node updatePairDetailsInDb.ts",
-    "update-reserves-V3": "ts-node updatePairDetailsInDbV3.ts"
+    "populate-db": "ts-node src/data-fetcher/fetchPairDetailsAndStoreToDb.ts && ts-node src/data-fetcher/fetchPairsAndUpdateDbSushi.ts && ts-node src/data-fetcher/fetchPairsAndUpdateDbPancake.ts",
+    "populate-db-uniswap": "ts-node src/data-fetcher/fetchPairDetailsAndStoreToDb.ts",
+    "populate-db-sushiSwap": "ts-node src/data-fetcher/fetchPairsAndUpdateDbSushi.ts",
+    "populate-db-panCakeSwap": "ts-node src/data-fetcher/fetchPairsAndUpdateDbPancake.ts",
+    "populate-db-v3": "ts-node src/data-fetcher/getAllPairsV3.ts",
+    "update-reserves": "ts-node src/data-fetcher/updatePairDetailsInDb.ts",
+    "update-reserves-V3": "ts-node src/data-fetcher/updatePairDetailsInDbV3.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.9.6",
     "@prisma/client": "^5.10.2",
-    "@types/express": "^4.17.21",
-    "@types/swagger-jsdoc": "^6.0.4",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "ethers": "^6.11.1",
     "express": "^4.18.3",
-    "gh-pages": "^6.1.1",
     "graphql": "^16.8.1",
     "mathjs": "^12.4.0",
     "nodemon": "^3.1.0",
-    "prisma": "^5.10.2",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0",
-    "tsc": "^2.0.4",
-    "typescript": "^5.4.2"
+    "prisma": "^5.10.2"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "gh-pages": "^6.1.1",
     "@types/node": "^20.11.21",
     "@types/swagger-ui-express": "^4.1.6",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsc": "^2.0.4",
+    "typescript": "^5.4.2"
   }
 }

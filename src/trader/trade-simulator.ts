@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
-import { UNISWAP_V2_ROUTER } from "./constants";
-import { tenderlyTxObj } from "./types";
+import { UNISWAP_V2_ROUTER } from "../constants";
+import { tenderlyTxObj } from "../types";
 import { CalldataGenerator } from "./calldataGenerator";
 
 dotenv.config();
