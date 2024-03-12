@@ -153,7 +153,7 @@ export async function findPath(
   queue[inTokenAddress].intermediate_path.add(inAmt);
   queue[inTokenAddress].token_from_pool.push("-");
 
-  let HOPS = 3;
+  let HOPS = 10;
 
   while (HOPS-- > 0) {
     let new_queue: {
@@ -212,6 +212,9 @@ export async function findPath(
     queue = new_queue;
   }
 
+  if (queue[outTokenAddress] === undefined) {
+    return "No Path found";
+  }
   const s = disp(
     queue[outTokenAddress].path,
     queue[outTokenAddress].intermediate_path,
@@ -265,17 +268,17 @@ export async function findPaths(
   d.add("Sushi Swap");
   d.add("Pancake Swap");
 
-  return [
-    await boundFunction(a),
-    await boundFunction(b),
-    await boundFunction(c),
-    await boundFunction(d),
-  ];
+  return {
+    "Uniswap V2 Only": await boundFunction(a),
+    "Sushi Swap Only": await boundFunction(b),
+    "Pancake Swap Only": await boundFunction(c),
+    "All Dexes": await boundFunction(d),
+  };
 }
 
 async function main() {
   const amount = BigInt("1000000000");
-  const res = await findPaths(data.usdc.address, data.usdt.address, amount);
+  const res = await findPaths(data.shibainu.address, data.usdt.address, amount);
   console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(
