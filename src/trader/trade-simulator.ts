@@ -10,13 +10,13 @@ const TENDERLY_ACCESS_KEY = process.env.TENDERLY_API;
 export class Simulator {
   static executeBatch = async (
     transactions: tenderlyTxObj[],
+    path: string[],
     block_number?: number
   ) => {
     try {
-      console.time("Batch Simulation");
       const res = (
         await axios.post(
-          `https://api.tenderly.co/api/v1/account/vikasrushi/project/project/simulate-bundle`,
+          `https://api.tenderly.co/api/v1/account/hiteshlwni/project/project/simulate-bundle`,
           {
             simulations: transactions.map((singleTx) => ({
               network_id: "1",
@@ -35,14 +35,27 @@ export class Simulator {
         )
       ).data;
 
-      const result: any[] = [];
-      res.simulation_results.map((e: any, index: number) => {
-        result.push({ status: e.simulation.status, id: index + 1 });
-      });
-      console.log(result);
+      let stack_trace =
+        res.simulation_results[1].transaction.transaction_info.stack_trace;
+
+      let failedAt = "";
+
+      for (let stkEle of stack_trace) {
+        if (path.find((e) => e === stkEle.contract)) {
+          failedAt = stkEle.contract;
+          break;
+        }
+      }
+
+      return {
+        success: res.simulation_results[1].simulation.status,
+        failedAt,
+      };
+
       console.timeEnd("Batch Simulation");
     } catch (error) {
       console.log(error);
+      return error;
     }
   };
 
@@ -81,7 +94,7 @@ export class Simulator {
       },
     ];
 
-    await this.executeBatch(calls);
+    return await this.executeBatch(calls, path);
   };
 
   static test = async () => {
@@ -113,6 +126,6 @@ export class Simulator {
       { from: t1?.txObj.from, to: t1?.txObj.to, input: t1?.calldata },
     ];
 
-    await this.executeBatch(calls);
+    await this.executeBatch(calls, path);
   };
 }

@@ -1,3 +1,5 @@
+import { getMaxTokenHolder } from "../trader/getMaxTokenHolder";
+import { Simulator } from "../trader/trade-simulator";
 import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
 import { prisma } from "./dbClient";
 
@@ -131,7 +133,7 @@ export async function findPath(
   },
   tokensToExclude: Set<string>,
   dexes: Set<string>
-) {
+): Promise<any[][] | string> {
   // console.log(graph[data.gooch.address]);
 
   let queue: {
@@ -153,7 +155,7 @@ export async function findPath(
   queue[inTokenAddress].intermediate_path.add(inAmt);
   queue[inTokenAddress].token_from_pool.push("-");
 
-  let HOPS = 3;
+  let HOPS = 10;
 
   while (HOPS-- > 0) {
     let new_queue: {
@@ -237,7 +239,7 @@ export async function findPaths(
 
   const reserves = await getReservesFromDb();
 
-  console.log(`fetched ${reserves.length} rows from db`);
+  //  console.log(`fetched ${reserves.length} rows from db`);
 
   for (let pair of reserves) {
     let token0 = pair.token0Address;
@@ -268,18 +270,66 @@ export async function findPaths(
   d.add("Sushi Swap");
   d.add("Pancake Swap");
 
+  let uni_v2_data = await boundFunction(a);
+  let sushi_data = await boundFunction(b);
+  let pancake_data = await boundFunction(c);
+  let all_data = await boundFunction(d);
+
+  let simulated_output: {
+    [key in string]: {
+      success: boolean;
+      amt: number;
+    };
+  } = {
+    uni_v2: {
+      success: false,
+      amt: 0,
+    },
+    sushi: {
+      success: false,
+      amt: 0,
+    },
+    pancake: {
+      success: false,
+      amt: 0,
+    },
+  };
+
+  if (!(typeof uni_v2_data === "string")) {
+    let path = uni_v2_data.map((e) => e[0]);
+    let sim_data = await Simulator.swapUniswapV2(
+      await getMaxTokenHolder(path[0]),
+      inAmt,
+      path,
+      0
+    );
+    console.log(sim_data);
+  }
+
+  let uni_v2_path =
+    typeof uni_v2_data === "string" ? [] : uni_v2_data.map((e) => e[0]);
+  let sushi_path =
+    typeof sushi_data === "string" ? [] : sushi_data.map((e) => e[0]);
+  let pancake_path =
+    typeof pancake_data === "string" ? [] : pancake_data.map((e) => e[0]);
+  let all_path = typeof all_data === "string" ? [] : all_data.map((e) => e[0]);
+
   return {
-    "Uniswap V2 Only": await boundFunction(a),
-    "Sushi Swap Only": await boundFunction(b),
-    "Pancake Swap Only": await boundFunction(c),
-    "All Dexes": await boundFunction(d),
+    "Uniswap V2 Only": uni_v2_data,
+    "Sushi Swap Only": sushi_data,
+    "Pancake Swap Only": pancake_data,
+    "All Dexes": all_data,
   };
 }
 
 async function main() {
-  const amount = BigInt("1000000000");
-  const res = await findPaths(data.shibainu.address, data.usdt.address, amount);
-  console.log(res);
+  const amountString = "1_000_000_000_000_000_000_000_000".replace(/_/g, "");
+  const res = await findPaths(
+    data.shibainu.address,
+    data.usdc.address,
+    BigInt(amountString)
+  );
+  //  console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(
   //   "0xD6153F5af5679a75cC85D8974463545181f48772",
@@ -289,4 +339,4 @@ async function main() {
   // );
 }
 
-// main();
+main();
