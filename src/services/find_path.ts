@@ -129,7 +129,7 @@ export async function findPath(
       PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
     ][];
   },
-
+  tokensToExclude: Set<string>,
   dexes: Set<string>
 ) {
   // console.log(graph[data.gooch.address]);
@@ -178,6 +178,7 @@ export async function findPath(
       for (let [neighbour, p] of graph[addr]) {
         if (qd.path.has(neighbour)) continue;
         if (!dexes.has(p.version)) continue;
+        if (tokensToExclude.has(neighbour)) continue;
         let new_qty;
         let q1 = p.token0Reserve;
         let q2 = p.token1Reserve;
@@ -243,12 +244,15 @@ export async function findPaths(
     if (!graph[token1]) graph[token1] = [];
     graph[token1].push([token0, pair]);
   }
+
+  let exclude = new Set<string>();
   let boundFunction = findPath.bind(
     null,
     inTokenAddress,
     outTokenAddress,
     inAmt,
-    graph
+    graph,
+    exclude
   );
   let a = new Set<string>();
   let b = new Set<string>();
