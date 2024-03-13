@@ -159,7 +159,7 @@ export async function findPath(
   queue[inTokenAddress].intermediate_path.add(inAmt);
   queue[inTokenAddress].token_from_pool.push("-");
 
-  let HOPS = 10;
+  let HOPS = 3;
 
   while (HOPS-- > 0) {
     let new_queue: {
