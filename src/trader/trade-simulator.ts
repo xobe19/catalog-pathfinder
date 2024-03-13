@@ -66,6 +66,7 @@ export class Simulator {
     path: string[],
     amountOutMin: number
   ) => {
+    console.log(from_address);
     // ? MKR -> WTBC
     const transactionData = CalldataGenerator.approveTokens(
       path[0],

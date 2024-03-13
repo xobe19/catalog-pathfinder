@@ -1,6 +1,12 @@
 import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
 import { prisma } from "./dbClient";
+import tokensJson from "../../data/extended_uniswap.json";
 
+let safeTokens = new Set<string>(
+  tokensJson["tokens"]
+    .filter((e) => e.chainId === 1)
+    .map((e) => e.address.toLowerCase())
+);
 function disp(
   addr: Set<String>,
   intermediate_path: Set<bigint>,
@@ -179,6 +185,8 @@ export async function findPath(
         if (qd.path.has(neighbour)) continue;
         if (!dexes.has(p.version)) continue;
         if (tokensToExclude.has(neighbour)) continue;
+        if (!safeTokens.has(neighbour) && neighbour !== outTokenAddress)
+          continue;
         let new_qty;
         let q1 = p.token0Reserve;
         let q2 = p.token1Reserve;
@@ -237,7 +245,7 @@ export async function findPaths(
 
   const reserves = await getReservesFromDb();
 
-  //  console.log(`fetched ${reserves.length} rows from db`);
+  console.log(`fetched ${reserves.length} rows from db`);
 
   for (let pair of reserves) {
     let token0 = pair.token0Address;
@@ -321,13 +329,13 @@ export async function findPaths(
 }
 
 async function main() {
-  const amountString = "1_000_000_000_000_000_000_000_000".replace(/_/g, "");
+  const amountString = "5_0_000_000_000_000_000_000_000_000".replace(/_/g, "");
   const res = await findPaths(
     data.shibainu.address,
     data.usdc.address,
     BigInt(amountString)
   );
-  //  console.log(res);
+  console.log(res);
   // const path = Array.from(res) as string[];
   // Simulator.swapUniswapV2(
   //   "0xD6153F5af5679a75cC85D8974463545181f48772",
