@@ -1,11 +1,33 @@
 import { Request, Router } from "express";
 import { findPaths } from "./services/find_path";
 import { QuoteBody } from "./types";
-
+import fs from "fs";
+import path from "path";
 export const router = Router();
 
 router.get("/", (req, res) => {
   res.send("Hello world");
+});
+
+router.get("/health", (req, res) => {
+  const timestamp = fs
+    .readFileSync(path.join(__dirname, "../data", "timestamp.txt"), "utf-8")
+    .split("\n")[0];
+
+  res.send(`Reserves Updated at ${timestamp}`);
+});
+
+router.post("/updateTimeStamp", (req, res) => {
+  const currentTime = new Date();
+  const currentOffset = currentTime.getTimezoneOffset();
+  const ISTTime = new Date(
+    currentTime.getTime() + (330 + currentOffset) * 60000
+  );
+  fs.writeFileSync(
+    path.join(__dirname, "../data", "timestamp.txt"),
+    ISTTime.toString()
+  );
+  res.send(`timestamp updated ${ISTTime}`);
 });
 
 /* 

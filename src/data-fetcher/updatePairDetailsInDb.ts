@@ -3,6 +3,7 @@ import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
 import { executeCalls, prepareCall } from "./multicall";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -143,6 +144,7 @@ async function main() {
 
   console.timeEnd("service time");
   console.log(new Date().toLocaleString());
+  await axios.post("/updateTimeStamp");
 }
 
 main();
