@@ -21,19 +21,6 @@ router.get("/health", (req, res) => {
   }
 });
 
-router.post("/updateTimeStamp", (req, res) => {
-  const currentTime = new Date();
-  const currentOffset = currentTime.getTimezoneOffset();
-  const ISTTime = new Date(
-    currentTime.getTime() + (330 + currentOffset) * 60000
-  );
-  fs.writeFileSync(
-    path.join(__dirname, "../data", "timestamp.txt"),
-    ISTTime.toString()
-  );
-  res.send(`timestamp updated ${ISTTime}`);
-});
-
 /* 
 {
   "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",

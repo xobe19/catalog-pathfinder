@@ -3,6 +3,7 @@ import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
 import { executeCalls, prepareCall } from "./multicall";
+import { updateTimeStamp } from "../timestamp";
 
 const prisma = new PrismaClient();
 
@@ -152,6 +153,8 @@ async function main() {
 
   console.timeEnd("service time");
   console.log(new Date().toLocaleString());
+
+  updateTimeStamp();
 }
 
 main();
