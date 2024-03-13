@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "3455e78f-8130-4057-9e6b-4fb5feffdc57",
+		"name": "Catalog Pathfinder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33551009"
+	},
+	"item": [
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "userFriendly",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n  \"tokenOutAddress\": \"0xdac17f958d2ee523a2206206994597c13d831ec7\",\n  \"amount\": \"4000000000\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://18.60.247.88/quote"
+			},
+			"response": []
+		},
+		{
+			"name": "path-with-decimals",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// ? Swap USDC->USDT Amountin = 4000 USDC\n\n{\n    \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n    \"tokenOutAddress\": \"0xdac17f958d2ee523a2206206994597c13d831ec7\",\n    \"amount\": \"4000000000\", // Decimals\n    \"userFriendly\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://18.60.247.88/quote"
+			},
+			"response": []
+		}
+	]
+}
