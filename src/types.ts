@@ -1,4 +1,5 @@
 import { Pair, PairPancakeSwap, PairSushiSwap } from "@prisma/client";
+import { dexes } from "./services/find_path";
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
 type Modify<T, R> = Omit<T, keyof R> & R;
@@ -6,7 +7,36 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 export interface QuoteBody {
   tokenInAddress: string;
   tokenOutAddress: string;
+  userFriendly: boolean;
   amount: string;
+}
+
+export interface QuoteInputToken {
+  address: string;
+  amount: string;
+  name: string;
+}
+
+export interface QuoteOutputToken {
+  address: string;
+  name: string;
+}
+
+export type ValueOf<T> = T[keyof T];
+
+export interface QuotePathMember {
+  address: string;
+  amountOut: string;
+  name: string;
+  dex: ValueOf<typeof dexes>;
+}
+
+export interface QuoteResponse {
+  tokenIn: QuoteInputToken;
+  path: {
+    [k in ValueOf<typeof dexes>]: QuotePathMember[] | string;
+  };
+  tokenOut: QuoteOutputToken;
 }
 
 export interface Call3 {
@@ -29,7 +59,7 @@ export type SushiPairBigInt = Modify<
     token0Reserve: bigint;
     token1Reserve: bigint;
   }
-> & { version: "Sushi Swap" };
+> & { version: "SushiSwap" };
 
 export type PancakeSwapPairBigInt = Modify<
   PairPancakeSwap,
@@ -37,7 +67,7 @@ export type PancakeSwapPairBigInt = Modify<
     token0Reserve: bigint;
     token1Reserve: bigint;
   }
-> & { version: "Pancake Swap" };
+> & { version: "PancakeSwap" };
 
 export type swapExactTokensForTokensArgs = {
   amountIn: bigint;

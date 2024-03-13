@@ -1,6 +1,18 @@
-import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
-import { prisma } from "./dbClient";
 import tokensJson from "../../data/extended_uniswap.json";
+import {
+  PairBigInt,
+  PancakeSwapPairBigInt,
+  SushiPairBigInt,
+  ValueOf,
+} from "../types";
+import { prisma } from "./dbClient";
+
+export const dexes = {
+  uniswapV2: "Uniswap V2",
+  sushiSwap: "SushiSwap",
+  pancakeSwap: "PancakeSwap",
+  all: "All",
+} as const;
 
 let safeTokens = new Set<string>(
   tokensJson["tokens"]
@@ -72,7 +84,7 @@ async function getReservesFromDb(): Promise<
       token0Reserve: BigInt(e.token0Reserve).valueOf(),
       token1Address: e.token1Address.toLowerCase(),
       token1Reserve: BigInt(e.token1Reserve).valueOf(),
-      version: "Uniswap V2",
+      version: dexes.uniswapV2,
     }));
 
   const sushiPairsMapped: SushiPairBigInt[] = sushiPairs.map((e) => ({
@@ -81,7 +93,7 @@ async function getReservesFromDb(): Promise<
     token0Reserve: BigInt(e.token0Reserve).valueOf(),
     token1Address: e.token1Address.toLowerCase(),
     token1Reserve: BigInt(e.token1Reserve).valueOf(),
-    version: "Sushi Swap",
+    version: dexes.sushiSwap,
   }));
 
   const PanCakePairsMapped: PancakeSwapPairBigInt[] = pancakePairs.map((e) => ({
@@ -90,7 +102,7 @@ async function getReservesFromDb(): Promise<
     token0Reserve: BigInt(e.token0Reserve).valueOf(),
     token1Address: e.token1Address.toLowerCase(),
     token1Reserve: BigInt(e.token1Reserve).valueOf(),
-    version: "Pancake Swap",
+    version: dexes.pancakeSwap,
   }));
 
   toRet.push(...sushiPairsMapped);
@@ -235,7 +247,9 @@ export async function findPaths(
   inTokenAddress: string,
   outTokenAddress: string,
   inAmt: bigint
-) {
+): Promise<{
+  [k in ValueOf<typeof dexes>]: string | string[][];
+}> {
   const graph: {
     [key in string]: [
       string,
@@ -269,12 +283,12 @@ export async function findPaths(
   let b = new Set<string>();
   let c = new Set<string>();
   let d = new Set<string>();
-  a.add("Uniswap V2");
-  b.add("Sushi Swap");
-  c.add("Pancake Swap");
-  d.add("Uniswap V2");
-  d.add("Sushi Swap");
-  d.add("Pancake Swap");
+  a.add(dexes.uniswapV2);
+  b.add(dexes.sushiSwap);
+  c.add(dexes.pancakeSwap);
+  d.add(dexes.uniswapV2);
+  d.add(dexes.sushiSwap);
+  d.add(dexes.pancakeSwap);
 
   let uni_v2_data = await boundFunction(a);
   let sushi_data = await boundFunction(b);
@@ -321,10 +335,10 @@ export async function findPaths(
   // let all_path = typeof all_data === "string" ? [] : all_data.map((e) => e[0]);
 
   return {
-    "Uniswap V2 Only": uni_v2_data,
-    "Sushi Swap Only": sushi_data,
-    "Pancake Swap Only": pancake_data,
-    "All Dexes": all_data,
+    [dexes.uniswapV2]: uni_v2_data,
+    [dexes.sushiSwap]: sushi_data,
+    [dexes.pancakeSwap]: pancake_data,
+    [dexes.all]: all_data,
   };
 }
 

@@ -1,8 +1,12 @@
+import { Token } from "@prisma/client";
+import { formatUnits, parseUnits } from "ethers";
 import { Request, Router } from "express";
-import { findPaths } from "./services/find_path";
-import { QuoteBody } from "./types";
 import fs from "fs";
 import path from "path";
+import { prisma } from "./services/dbClient";
+import { dexes, findPaths } from "./services/find_path";
+import { QuoteBody, QuoteResponse } from "./types";
+
 export const router = Router();
 
 router.get("/", (req, res) => {
@@ -21,6 +25,29 @@ router.get("/health", (req, res) => {
   }
 });
 
+function findPathResultToResponse(
+  resultPath: string | any[][],
+  tokenMap: Map<string, Token>,
+  userFriendly: boolean
+) {
+  if (typeof resultPath === "string") {
+    return resultPath;
+  }
+
+  return resultPath.slice(1).map((ele) => {
+    const [address, amount, dex] = ele;
+    const decimals = tokenMap.get(address)?.decimals;
+    const name = tokenMap.get(address)?.name;
+    return {
+      address: ele[0],
+      amountOut:
+        userFriendly && decimals ? formatUnits(amount, decimals) : amount,
+      name: name ?? "",
+      dex,
+    };
+  });
+}
+
 /* 
 {
   "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -30,16 +57,99 @@ router.get("/health", (req, res) => {
 */
 router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
   try {
-    const {
-      body: { tokenInAddress, tokenOutAddress, amount },
-    } = req;
+    const { amount, userFriendly } = req.body;
+    const tokenInAddress = req.body.tokenInAddress.toLowerCase();
+    const tokenOutAddress = req.body.tokenOutAddress.toLowerCase();
+
+    const [tokenIn, tokenOut] = await prisma.token.findMany({
+      where: {
+        id: { in: [tokenInAddress, tokenOutAddress] },
+      },
+    });
+
+    if (!tokenIn) {
+      throw new Error(`Token ${tokenInAddress} not found`);
+    }
+    if (!tokenOut) {
+      throw new Error(`Token ${tokenOut} not found`);
+    }
+
+    let amountFromUserFriendly: bigint = BigInt(0);
+    if (userFriendly) {
+      if (!tokenIn.decimals)
+        throw new Error(`Token ${tokenIn.id} decimals not found`);
+      if (!tokenOut.decimals)
+        throw new Error(`Token ${tokenOut.id} decimals not found`);
+
+      amountFromUserFriendly = parseUnits(amount, tokenIn.decimals);
+    }
+
     console.log(req.body);
     const path = await findPaths(
       tokenInAddress,
       tokenOutAddress,
-      BigInt(amount)
+      userFriendly ? amountFromUserFriendly : BigInt(amount)
     );
-    res.json(path);
+
+    const pathValues = [
+      path[dexes.uniswapV2],
+      path[dexes.sushiSwap],
+      path[dexes.pancakeSwap],
+      path[dexes.all],
+    ];
+
+    const addrs = new Set<string>();
+    for (const val of pathValues) {
+      if (typeof val !== "string") {
+        val.forEach((e) => addrs.add(e[0]));
+      }
+    }
+    const tokens = await prisma.token.findMany({
+      where: {
+        id: { in: Array.from<string>(addrs) },
+      },
+    });
+    const tokenMap = new Map<string, Token>();
+    for (const token of tokens) {
+      tokenMap.set(token.id, token);
+    }
+    console.log(tokenMap);
+
+    const ret: QuoteResponse = {
+      tokenIn: {
+        address: tokenIn.id,
+        name: tokenIn.name ?? "",
+        amount,
+      },
+      tokenOut: {
+        address: tokenOut.id,
+        name: tokenOut.name ?? "",
+      },
+      path: {
+        [dexes.uniswapV2]: findPathResultToResponse(
+          path[dexes.uniswapV2],
+          tokenMap,
+          userFriendly
+        ),
+        [dexes.sushiSwap]: findPathResultToResponse(
+          path[dexes.sushiSwap],
+          tokenMap,
+          userFriendly
+        ),
+        [dexes.pancakeSwap]: findPathResultToResponse(
+          path[dexes.pancakeSwap],
+          tokenMap,
+          userFriendly
+        ),
+        [dexes.all]: findPathResultToResponse(
+          path[dexes.all],
+          tokenMap,
+          userFriendly
+        ),
+      },
+    };
+
+    res.json(ret);
   } catch (ex) {
     console.error(ex);
     const err = ex as Error;

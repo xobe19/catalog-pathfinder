@@ -49,3 +49,10 @@ model PairPancakeSwap {
   token0Reserve String
   token1Reserve String
 }
+
+model Token {
+  id       String  @id
+  symbol   String?
+  name     String?
+  decimals Int?
+}
