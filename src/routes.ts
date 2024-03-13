@@ -10,11 +10,15 @@ router.get("/", (req, res) => {
 });
 
 router.get("/health", (req, res) => {
-  const timestamp = fs
-    .readFileSync(path.join(__dirname, "../data", "timestamp.txt"), "utf-8")
-    .split("\n")[0];
+  try {
+    const timestamp = fs
+      .readFileSync(path.join(__dirname, "../data", "timestamp.txt"), "utf-8")
+      .split("\n")[0];
 
-  res.send(`Reserves Updated at ${timestamp}`);
+    res.send(`Reserves Updated at ${timestamp}`);
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 router.post("/updateTimeStamp", (req, res) => {
