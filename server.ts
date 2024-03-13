@@ -9,7 +9,7 @@ app.use(express.json());
 app.use("/", router);
 
 const PORT = parseInt(process.env.PORT!);
-if (!PORT) throw new Error("Please set the SERVER_PORT environment variable.");
+if (!PORT) throw new Error("Please set the PORT environment variable.");
 
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);

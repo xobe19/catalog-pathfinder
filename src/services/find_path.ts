@@ -1,5 +1,3 @@
-import { getMaxTokenHolder } from "../trader/getMaxTokenHolder";
-import { Simulator } from "../trader/trade-simulator";
 import { PairBigInt, PancakeSwapPairBigInt, SushiPairBigInt } from "../types";
 import { prisma } from "./dbClient";
 
@@ -295,24 +293,24 @@ export async function findPaths(
     },
   };
 
-  if (!(typeof uni_v2_data === "string")) {
-    let path = uni_v2_data.map((e) => e[0]);
-    let sim_data = await Simulator.swapUniswapV2(
-      await getMaxTokenHolder(path[0]),
-      inAmt,
-      path,
-      0
-    );
-    console.log(sim_data);
-  }
+  // if (!(typeof uni_v2_data === "string")) {
+  //   let path = uni_v2_data.map((e) => e[0]);
+  //   let sim_data = await Simulator.swapUniswapV2(
+  //     await getMaxTokenHolder(path[0]),
+  //     inAmt,
+  //     path,
+  //     0
+  //   );
+  //   console.log(sim_data);
+  // }
 
-  let uni_v2_path =
-    typeof uni_v2_data === "string" ? [] : uni_v2_data.map((e) => e[0]);
-  let sushi_path =
-    typeof sushi_data === "string" ? [] : sushi_data.map((e) => e[0]);
-  let pancake_path =
-    typeof pancake_data === "string" ? [] : pancake_data.map((e) => e[0]);
-  let all_path = typeof all_data === "string" ? [] : all_data.map((e) => e[0]);
+  // let uni_v2_path =
+  //   typeof uni_v2_data === "string" ? [] : uni_v2_data.map((e) => e[0]);
+  // let sushi_path =
+  //   typeof sushi_data === "string" ? [] : sushi_data.map((e) => e[0]);
+  // let pancake_path =
+  //   typeof pancake_data === "string" ? [] : pancake_data.map((e) => e[0]);
+  // let all_path = typeof all_data === "string" ? [] : all_data.map((e) => e[0]);
 
   return {
     "Uniswap V2 Only": uni_v2_data,
@@ -338,5 +336,3 @@ async function main() {
   //   0
   // );
 }
-
-main();
