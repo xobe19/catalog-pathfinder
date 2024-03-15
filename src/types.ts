@@ -1,4 +1,4 @@
-import { Pair, PairPancakeSwap, PairSushiSwap } from "@prisma/client";
+import { Pair, PairPancakeSwap, PairSushiSwap, PairV3 } from "@prisma/client";
 import { dexes } from "./services/find_path";
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
@@ -52,6 +52,13 @@ export type PairBigInt = Modify<
     token1Reserve: bigint;
   }
 > & { version: "Uniswap V2" };
+
+export type PairV3BigInt = Pick<
+  PairV3,
+  "address" | "fees" | "token0Address" | "token1Address" | "tick"
+> & {
+  version: "Uniswap V3";
+};
 
 export type SushiPairBigInt = Modify<
   PairSushiSwap,

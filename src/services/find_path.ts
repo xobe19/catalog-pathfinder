@@ -1,14 +1,17 @@
 import tokensJson from "../../data/extended_uniswap.json";
 import {
   PairBigInt,
+  PairV3BigInt,
   PancakeSwapPairBigInt,
   SushiPairBigInt,
-  ValueOf,
 } from "../types";
+import { ValueOf } from "./../types";
 import { prisma } from "./dbClient";
+import { getAmountOutV3 } from "./getAmountV3";
 
 export const dexes = {
   uniswapV2: "Uniswap V2",
+  uniswapV3: "Uniswap V3",
   sushiSwap: "SushiSwap",
   pancakeSwap: "PancakeSwap",
   all: "All",
@@ -71,21 +74,26 @@ function formatDecimal(x: bigint, decimal: number) {
 }
 
 async function getReservesFromDb(): Promise<
-  (PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt)[]
+  (PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt | PairV3BigInt)[]
 > {
   const v2Pairs = await prisma.pair.findMany();
   const sushiPairs = await prisma.pairSushiSwap.findMany();
   const pancakePairs = await prisma.pairPancakeSwap.findMany();
+  const uniswapV3Pairs = await prisma.pairV3.findMany();
 
-  const toRet: (PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt)[] =
-    v2Pairs.map((e) => ({
-      address: e.address.toLowerCase(),
-      token0Address: e.token0Address.toLowerCase(),
-      token0Reserve: BigInt(e.token0Reserve).valueOf(),
-      token1Address: e.token1Address.toLowerCase(),
-      token1Reserve: BigInt(e.token1Reserve).valueOf(),
-      version: dexes.uniswapV2,
-    }));
+  const toRet: (
+    | PairBigInt
+    | SushiPairBigInt
+    | PancakeSwapPairBigInt
+    | PairV3BigInt
+  )[] = v2Pairs.map((e) => ({
+    address: e.address.toLowerCase(),
+    token0Address: e.token0Address.toLowerCase(),
+    token0Reserve: BigInt(e.token0Reserve).valueOf(),
+    token1Address: e.token1Address.toLowerCase(),
+    token1Reserve: BigInt(e.token1Reserve).valueOf(),
+    version: dexes.uniswapV2,
+  }));
 
   const sushiPairsMapped: SushiPairBigInt[] = sushiPairs.map((e) => ({
     address: e.address.toLowerCase(),
@@ -104,10 +112,18 @@ async function getReservesFromDb(): Promise<
     token1Reserve: BigInt(e.token1Reserve).valueOf(),
     version: dexes.pancakeSwap,
   }));
+  const Uniswapv3PairsMapped: PairV3BigInt[] = uniswapV3Pairs.map((e) => ({
+    address: e.address.toLowerCase(),
+    token0Address: e.token0Address.toLowerCase(),
+    token1Address: e.token1Address.toLowerCase(),
+    tick: e.tick,
+    fees: e.fees,
+    version: dexes.uniswapV3,
+  }));
 
   toRet.push(...sushiPairsMapped);
   toRet.push(...PanCakePairsMapped);
-
+  toRet.push(...Uniswapv3PairsMapped);
   return toRet;
 }
 
@@ -144,7 +160,7 @@ export async function findPath(
   graph: {
     [key in string]: [
       string,
-      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
+      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt | PairV3BigInt
     ][];
   },
   tokensToExclude: Set<string>,
@@ -199,15 +215,21 @@ export async function findPath(
         if (tokensToExclude.has(neighbour)) continue;
         if (!safeTokens.has(neighbour) && neighbour !== outTokenAddress)
           continue;
+
         let new_qty;
-        let q1 = p.token0Reserve;
-        let q2 = p.token1Reserve;
-        if (p.token0Address != addr) {
-          let tmp = q2;
-          q2 = q1;
-          q1 = tmp;
+        if (p.version !== "Uniswap V3") {
+          let q1 = p.token0Reserve;
+          let q2 = p.token1Reserve;
+          if (p.token0Address != addr) {
+            let tmp = q2;
+            q2 = q1;
+            q1 = tmp;
+          }
+          new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
+        } else {
+          new_qty = getAmountOutV3(qd.qty.toString(), p.tick, addr, neighbour);
         }
-        new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
+
         if (!new_qty) continue;
         if (
           new_queue[neighbour] === undefined ||
@@ -253,7 +275,7 @@ export async function findPaths(
   const graph: {
     [key in string]: [
       string,
-      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt
+      PairBigInt | SushiPairBigInt | PancakeSwapPairBigInt | PairV3BigInt
     ][];
   } = {};
 
@@ -283,17 +305,22 @@ export async function findPaths(
   let b = new Set<string>();
   let c = new Set<string>();
   let d = new Set<string>();
+  let e = new Set<string>();
   a.add(dexes.uniswapV2);
   b.add(dexes.sushiSwap);
   c.add(dexes.pancakeSwap);
-  d.add(dexes.uniswapV2);
-  d.add(dexes.sushiSwap);
-  d.add(dexes.pancakeSwap);
+  d.add(dexes.uniswapV3);
+
+  e.add(dexes.sushiSwap);
+  e.add(dexes.pancakeSwap);
+  e.add(dexes.uniswapV2);
+  e.add(dexes.uniswapV3);
 
   let uni_v2_data = await boundFunction(a);
   let sushi_data = await boundFunction(b);
   let pancake_data = await boundFunction(c);
-  let all_data = await boundFunction(d);
+  let uni_v3_data = await boundFunction(d);
+  let all_data = await boundFunction(e);
 
   let simulated_output: {
     [key in string]: {
@@ -338,15 +365,16 @@ export async function findPaths(
     [dexes.uniswapV2]: uni_v2_data,
     [dexes.sushiSwap]: sushi_data,
     [dexes.pancakeSwap]: pancake_data,
+    [dexes.uniswapV3]: uni_v3_data,
     [dexes.all]: all_data,
   };
 }
 
 async function main() {
-  const amountString = "5_0_000_000_000_000_000_000_000_000".replace(/_/g, "");
+  const amountString = "5_000_000_000_000_000_000_000".replace(/_/g, "");
   const res = await findPaths(
-    data.shibainu.address,
-    data.usdc.address,
+    "0x5eed99d066a8caf10f3e4327c1b3d8b673485eed",
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     BigInt(amountString)
   );
   console.log(res);
@@ -358,3 +386,5 @@ async function main() {
   //   0
   // );
 }
+
+main();

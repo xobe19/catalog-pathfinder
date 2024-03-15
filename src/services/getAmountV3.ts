@@ -1,31 +1,19 @@
 import { FullMath, TickMath } from "@uniswap/v3-sdk";
 import JSBI from "jsbi";
 
-enum SwapIndex {
-  Token_0_to_Token1,
-  Token_1_to_Token0,
-}
 export function getAmountOutV3(
   inputAmount: string,
   currentTick: number,
   inputAddr: string,
   outAddr: string
-): string {
+) {
   //  ? Tick => sqrt96
   //  ? ratioX192 = sqrt96 ^ 2
   const sqrtRatioX96 = TickMath.getSqrtRatioAtTick(currentTick);
 
   const baseAmount = JSBI.BigInt(inputAmount);
   let quoteAmount;
-  let ratioX192 = JSBI.multiply(sqrtRatioX96, sqrtRatioX96);
-  let ls = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(192));
-
-  const val = FullMath.mulDivRoundingUp(ratioX192, baseAmount, ls);
-  console.log(val.toString() + "sd");
-
-  console.log("340282366920938463463374607431768211455");
   const uint128Max = JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128));
-  console.log(uint128Max.toString());
   if (sqrtRatioX96 < uint128Max) {
     let ratioX192 = JSBI.multiply(sqrtRatioX96, sqrtRatioX96);
     let ls = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(192));
@@ -44,7 +32,7 @@ export function getAmountOutV3(
         ? FullMath.mulDivRoundingUp(ratioX128, baseAmount, ls2)
         : FullMath.mulDivRoundingUp(ls2, baseAmount, ratioX128);
   }
-  return quoteAmount.toString();
+  return BigInt(quoteAmount.toString());
 }
 
 // const a = getAmountOutV3(
@@ -80,12 +68,3 @@ function main(
   console.log(quoteAmount.toString());
   return quoteAmount;
 }
-
-main(
-  -89170,
-  "0x5eed99d066a8caf10f3e4327c1b3d8b673485eed",
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  "10000",
-  18
-);
-// ""	"4490748073519104952969"	"917689661928664980627449623"	3000	""	18	"SEED"	""	18	"WETH"	-89170
