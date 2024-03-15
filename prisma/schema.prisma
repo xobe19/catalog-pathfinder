@@ -26,6 +26,7 @@ model PairV3 {
   liquidity      String
   sqrtPriceX96   String
   fees           Int
+  tick           Int
   token0Address  String
   token0Decimals Int
   token0Symbol   String

@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { PairV3, PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+import { updateTimeStamp } from "../timestamp";
 dotenv.config();
 
 const GRAPHQL_URL = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
@@ -13,6 +14,7 @@ async function main() {
         id
         liquidity
         feeTier
+        tick
         sqrtPrice
         token0 {
           id
@@ -43,13 +45,14 @@ async function main() {
         skip: i,
       },
     });
-
     const primseToDB: PairV3[] = res.data.pools.map((e: any) => {
+      const tick = e.tick ? parseInt(e.tick) : -1;
       return {
         address: e.id,
         liquidity: e.liquidity,
         sqrtPriceX96: e.sqrtPrice,
         fees: parseInt(e.feeTier),
+        tick: tick,
         token0Address: e.token0.id,
         token0Decimals: parseInt(e.token0.decimals),
         token0Symbol: e.token0.symbol,
@@ -63,6 +66,7 @@ async function main() {
     });
     console.log(`pushed ${i} to db `);
   }
+  await updateTimeStamp();
 }
 
 main();

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { UNISWAP_POOL_ABI } from "./abis";
 import { executeCalls, prepareCallVariable } from "./multicall";
+import { updateTimeStamp } from "../timestamp";
 
 const prisma = new PrismaClient();
 
@@ -108,6 +109,7 @@ async function main() {
     WHERE "PairV3".address = new_values.address`
   );
   console.log("db updated for pairV3");
+  await updateTimeStamp();
 }
 
 main();
