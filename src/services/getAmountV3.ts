@@ -6,41 +6,48 @@ enum SwapIndex {
   Token_1_to_Token0,
 }
 export function getAmountOutV3(
-  inputAmount: number,
+  inputAmount: string,
   currentTick: number,
-  swap: SwapIndex,
-  Token0Decimal: number,
-  Token1Decimal: number,
-  fee: number
+  inputAddr: string,
+  outAddr: string
 ): string {
   //  ? Tick => sqrt96
   //  ? ratioX192 = sqrt96 ^ 2
   const sqrtRatioX96 = TickMath.getSqrtRatioAtTick(currentTick);
-  const ratioX192 = JSBI.multiply(sqrtRatioX96, sqrtRatioX96);
 
-  const baseAmount = JSBI.BigInt(inputAmount * 10 ** Token0Decimal);
-  const shift = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(192));
-  let quoteAmount = FullMath.mulDivRoundingUp(ratioX192, baseAmount, shift);
+  const baseAmount = JSBI.BigInt(inputAmount);
+  let quoteAmount;
+  let ratioX192 = JSBI.multiply(sqrtRatioX96, sqrtRatioX96);
+  let ls = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(192));
 
-  if (swap === SwapIndex.Token_1_to_Token0) {
-    const newQuote =
-      (1 / parseInt(quoteAmount.toString())) * 10 ** Token1Decimal;
+  const val = FullMath.mulDivRoundingUp(ratioX192, baseAmount, ls);
+  console.log(val.toString() + "sd");
+  if (sqrtRatioX96 < JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128))) {
+    let ratioX192 = JSBI.multiply(sqrtRatioX96, sqrtRatioX96);
+    let ls = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(192));
+    quoteAmount =
+      inputAddr < outAddr
+        ? FullMath.mulDivRoundingUp(ratioX192, baseAmount, ls)
+        : FullMath.mulDivRoundingUp(ls, baseAmount, ratioX192);
+  } else {
+    let ls = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(64));
+    let ratioX128 = FullMath.mulDivRoundingUp(sqrtRatioX96, sqrtRatioX96, ls);
 
-    return (
-      Math.floor(newQuote * 10 ** Token0Decimal) *
-      (fee / 100)
-    ).toString();
+    let ls2 = JSBI.leftShift(JSBI.BigInt(1), JSBI.BigInt(128));
+
+    quoteAmount =
+      inputAddr < outAddr
+        ? FullMath.mulDivRoundingUp(ratioX128, baseAmount, ls2)
+        : FullMath.mulDivRoundingUp(ls2, baseAmount, ratioX128);
   }
-  //   const newQuote = BigInt(quoteAmount.toString()) * BigInt(fee / 100);
   return quoteAmount.toString();
 }
 
 const a = getAmountOutV3(
-  10000000,
+  "500_000_000000000_000000000".replace(/_/g, ""),
+
   -384543,
-  SwapIndex.Token_0_to_Token1,
-  6,
-  18,
-  3000
+  "a",
+  "b"
 );
 console.log(a);
