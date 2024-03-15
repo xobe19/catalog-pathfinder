@@ -1,6 +1,5 @@
 import fs from "fs";
 import { executeCalls, prepareCall } from "./multicall";
-import { prisma } from "../../token-details/dbClient";
 
 async function getAllTokens() {
   return fs.readFileSync("../../data/tokenadddress.txt", "utf-8").split("\n");

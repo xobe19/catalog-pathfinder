@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "./dbClient";
+import { prisma } from "../../services/dbClient";
 
 interface TokenList {
   tokens: {

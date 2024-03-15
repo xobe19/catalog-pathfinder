@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { Contract, Interface, JsonRpcProvider } from "ethers";
 import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "../constants";
-import { Call3 } from "../types";
+import { Aggregate3Response, Call3, decodeFunction } from "../types";
 
 dotenv.config();
 
@@ -35,6 +35,8 @@ export function prepareCall(
   };
 
   return {
+    contractAddress,
+    functionName,
     functionInterface,
     call,
     decodeResult,
@@ -57,19 +59,24 @@ export function prepareCallVariable(
   };
 
   return {
+    contractAddress,
+    functionName: variableName,
     functionInterface,
     call,
     decodeResult,
   };
 }
 
-export async function executeCalls(calls: ReturnType<typeof prepareCall>[]) {
+export async function executeCalls(
+  calls: ReturnType<typeof prepareCall>[],
+  decode: decodeFunction = (result, call) => {
+    return call.decodeResult(result.returnData);
+  }
+) {
   const call3s = calls.map((call) => call.call);
-
-  type Aggregate3Response = { success: boolean; returnData: string };
 
   const results: Aggregate3Response[] = await multicall.aggregate3.staticCall(
     call3s
   );
-  return results.map((result, i) => calls[i].decodeResult(result.returnData));
+  return results.map((result, i) => decode(result, calls[i]));
 }

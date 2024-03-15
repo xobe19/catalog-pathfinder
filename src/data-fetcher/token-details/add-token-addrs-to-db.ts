@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { prisma } from "./dbClient";
+import { prisma } from "../../services/dbClient";
 
 async function main() {
   console.time("done in");

@@ -1,8 +1,16 @@
 import { Pair, PairPancakeSwap, PairSushiSwap, PairV3 } from "@prisma/client";
+import { Result } from "ethers";
+import { prepareCall } from "./data-fetcher/multicall";
 import { dexes } from "./services/find_path";
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
 type Modify<T, R> = Omit<T, keyof R> & R;
+
+export type Aggregate3Response = { success: boolean; returnData: string };
+export type decodeFunction = (
+  result: Aggregate3Response,
+  call: ReturnType<typeof prepareCall>
+) => Result;
 
 export interface QuoteBody {
   tokenInAddress: string;

@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "./dbClient";
-
+import { prisma } from "../../services/dbClient";
 import tokenData from "./subgraph-token-data.json";
 
 async function main() {
