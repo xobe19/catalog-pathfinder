@@ -227,7 +227,13 @@ export async function findPath(
           }
           new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
         } else {
-          new_qty = getAmountOutV3(qd.qty.toString(), p.tick, addr, neighbour);
+          new_qty = getAmountOutV3(
+            qd.qty.toString(),
+            p.tick,
+            addr,
+            neighbour,
+            p.fees
+          );
         }
 
         if (!new_qty) continue;
