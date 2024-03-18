@@ -7,7 +7,13 @@ dotenv.config();
 const GRAPHQL_URL = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
 
 const prisma = new PrismaClient();
+
 async function main() {
+  // !! CLEARING  DB BEFORE UPDATEING
+
+  console.log("cleared pairV3 db");
+  await prisma.pairV3.deleteMany({});
+
   const tokensQuery = gql`
     query GetPools($skip: Int) {
       pools(first: 1000, skip: $skip) {
@@ -46,7 +52,7 @@ async function main() {
       },
     });
     const primseToDB: PairV3[] = res.data.pools.map((e: any) => {
-      const tick = e.tick ? parseInt(e.tick) : -1;
+      const tick = e.tick ? parseInt(e.tick) : 0;
       return {
         address: e.id,
         liquidity: e.liquidity,

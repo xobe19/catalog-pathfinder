@@ -1004,4 +1004,6 @@ where
       and "token1Address" = '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d'
       or "token0Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
       and "token1Address" = '0xe3dbc4f88eaa632ddf9708732e2832eeaa6688ab'
+      or "token0Address" ='0x5eed99d066a8caf10f3e4327c1b3d8b673485eed'
+      and "token1Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
   )
