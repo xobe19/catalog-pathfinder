@@ -127,7 +127,7 @@ async function getReservesFromDb(): Promise<
   return toRet;
 }
 
-function getOut(
+function getOutV2(
   in_token_res: bigint,
   out_token_res: bigint,
   inTokenAmt: bigint
@@ -225,7 +225,7 @@ export async function findPath(
             q2 = q1;
             q1 = tmp;
           }
-          new_qty = getOut(q1.valueOf(), q2.valueOf(), qd.qty);
+          new_qty = getOutV2(q1.valueOf(), q2.valueOf(), qd.qty);
         } else {
           new_qty = getAmountOutV3(
             qd.qty.toString(),

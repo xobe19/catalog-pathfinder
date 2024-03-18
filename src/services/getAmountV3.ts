@@ -11,7 +11,7 @@ export function getAmountOutV3(
   baseToken: string,
   quoteToken: string,
   fees: number
-) {
+): bigint {
   //  ? Tick => sqrt96
   //  ? ratioX192 = sqrt96 ^ 2
   const sqrtRatioX96 = TickMath.getSqrtRatioAtTick(tick);
@@ -71,7 +71,19 @@ export function getAmountOutV3(
     outAmount: quoteAmount.toString(),
     fees,
   });
-  return BigInt(quoteAmount.toString());
+  // 0.05%, 0.3%, and 1.00%
+  /*
+  | Fee    | Percent |
+  |--------|---------|
+  | 100    | 0.01%   |
+  | 500    | 0.05%   |
+  | 3000   | 0.3%    |
+  | 10,000 | 1%      |
+  */
+
+  const quoteAmountBigInt = BigInt(quoteAmount.toString());
+
+  return (quoteAmountBigInt * BigInt(100) - BigInt(fees)) / BigInt(100);
 }
 
 // const a = getAmountOutV3(
@@ -100,8 +112,11 @@ const tick = 194364;
 //   Mathjs.bignumber(100).mul(Mathjs.bignumber(10).pow(weth.decimals)).toString(),
 //   tick,
 //   weth.address,
-//   usdc.address
+//   usdc.address,
+//   3000
 // );
+
+// console.log(wethToUsdc);
 
 // logg(
 //   getAmountOutV3(wethToUsdc.toString(), 65300, usdc.address, wbtc.address)
