@@ -141,6 +141,11 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
           tokenMap,
           userFriendly
         ),
+        [dexes.uniswapV3]: findPathResultToResponse(
+          path[dexes.uniswapV3],
+          tokenMap,
+          userFriendly
+        ),
         [dexes.all]: findPathResultToResponse(
           path[dexes.all],
           tokenMap,
