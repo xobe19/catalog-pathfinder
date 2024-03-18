@@ -63,7 +63,7 @@ export function getAmountOutV3(
     logg({ quoteAmount: quoteAmount.toString() });
   }
 
-  console.log({
+  logg({
     tick,
     baseAmount,
     baseToken,

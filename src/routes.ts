@@ -61,11 +61,13 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
     const tokenInAddress = req.body.tokenInAddress.toLowerCase();
     const tokenOutAddress = req.body.tokenOutAddress.toLowerCase();
 
-    const [tokenIn, tokenOut] = await prisma.token.findMany({
+    const many = await prisma.token.findMany({
       where: {
         id: { in: [tokenInAddress, tokenOutAddress] },
       },
     });
+    const tokenIn = many.find((tok) => tok.id === tokenInAddress)!;
+    const tokenOut = many.find((tok) => tok.id === tokenOutAddress)!;
 
     if (!tokenIn) {
       throw new Error(`Token ${tokenInAddress} not found`);
@@ -84,6 +86,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
       amountFromUserFriendly = parseUnits(amount, tokenIn.decimals);
     }
 
+    console.log(new Date());
     console.log(req.body);
     const path = await findPaths(
       tokenInAddress,
@@ -91,8 +94,10 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
       userFriendly ? amountFromUserFriendly : BigInt(amount)
     );
 
+    /* TODO: make sure it only accepts all dexes, nothing less, nothing more */
     const pathValues = [
       path[dexes.uniswapV2],
+      path[dexes.uniswapV3],
       path[dexes.sushiSwap],
       path[dexes.pancakeSwap],
       path[dexes.all],
@@ -104,6 +109,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
         val.forEach((e) => addrs.add(e[0]));
       }
     }
+
     const tokens = await prisma.token.findMany({
       where: {
         id: { in: Array.from<string>(addrs) },
@@ -113,7 +119,6 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
     for (const token of tokens) {
       tokenMap.set(token.id, token);
     }
-    console.log(tokenMap);
 
     const ret: QuoteResponse = {
       tokenIn: {
