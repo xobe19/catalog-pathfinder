@@ -74,7 +74,7 @@ exports.router.post("/quote", async (req, res) => {
                 throw new Error(`Token ${tokenOut.id} decimals not found`);
             amountFromUserFriendly = (0, ethers_1.parseUnits)(amount, tokenIn.decimals);
         }
-        console.log(new Date());
+        console.log(new Date()) + ": ";
         console.log(req.body);
         const path = await (0, find_path_1.findPaths)(tokenInAddress, tokenOutAddress, userFriendly ? amountFromUserFriendly : BigInt(amount));
         /* TODO: make sure it only accepts all dexes, nothing less, nothing more */
