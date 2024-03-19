@@ -69,10 +69,10 @@ function getPairDetailsFromExecuteCallsResult(
     const token0 = executeCallsResults[i + 1];
     const token1 = executeCallsResults[i + 2];
 
-    const token0Address = (token0[0] as bigint).toString();
-    const token1Address = (token1[0] as bigint).toString();
+    const token0Address = (token0[0] as bigint).toString().toLowerCase();
+    const token1Address = (token1[0] as bigint).toString().toLowerCase();
     const pair: Pair = {
-      address: pairAddress[j++],
+      address: pairAddress[j++].toLowerCase(),
       token0Address,
       token1Address,
       token0Reserve: reserves[0].toString(),
