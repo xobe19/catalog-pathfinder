@@ -2,9 +2,8 @@ import { Pair, PrismaClient } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
-import { executeCalls, prepareCall } from "./multicall";
-import axios from "axios";
 import { updateTimeStamp } from "../timestamp";
+import { executeCalls, prepareCall } from "./multicall";
 
 const prisma = new PrismaClient();
 
@@ -89,14 +88,13 @@ function toDbUpdateQuery(
   }
   return valuesClauses.join(", ");
 }
-
 async function main() {
   console.log(new Date().toLocaleString());
   console.time("service time");
 
   const pairAddressesFilePath = path.join(
     __dirname,
-    "data",
+    "../../data",
     "uniswap_v2_pair_addresses.csv"
   );
 
