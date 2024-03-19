@@ -86,7 +86,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
       amountFromUserFriendly = parseUnits(amount, tokenIn.decimals);
     }
 
-    console.log(new Date());
+    console.log(new Date()) + ": ";
     console.log(req.body);
     const path = await findPaths(
       tokenInAddress,
