@@ -5,6 +5,7 @@ function logg(message?: any, ...optionalParams: any[]) {
   // console.log(message, ...optionalParams);
 }
 
+/* TODO: subtract fee from input amt, not output amt */
 export function getAmountOutV3(
   baseAmount: string,
   tick: number,

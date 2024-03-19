@@ -1,0 +1,405 @@
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+    "name": "ApeCoin"
+  },
+  "path": {
+    "Uniswap V2": "No Path found",
+    "SushiSwap": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.181752914737119453",
+        "name": "Wrapped Ether",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3974.066807",
+        "name": "Tether USD",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+        "amountOut": "1419.317649060941117256",
+        "name": "ApeCoin",
+        "dex": "SushiSwap"
+      }
+    ],
+    "PancakeSwap": "No Path found",
+    "Uniswap V3": "No Path found",
+    "All": [
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "4011.616155",
+        "name": "Tether USD",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+        "amountOut": "1428.574795113147337701",
+        "name": "ApeCoin",
+        "dex": "SushiSwap"
+      }
+    ]
+  }
+}
+
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0xfF20817765cB7f73d4bde2e66e067E58D11095C2",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0xff20817765cb7f73d4bde2e66e067e58d11095c2",
+    "name": "Amp"
+  },
+  "path": {
+    "Uniswap V2": "No Path found",
+    "SushiSwap": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.181752914737119453",
+        "name": "Wrapped Ether",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0xff20817765cb7f73d4bde2e66e067e58d11095c2",
+        "amountOut": "406591.263348258986942446",
+        "name": "Amp",
+        "dex": "SushiSwap"
+      }
+    ],
+    "PancakeSwap": "No Path found",
+    "Uniswap V3": "No Path found",
+    "All": [
+      {
+        "address": "0xa1d6df714f91debf4e0802a542e13067f31b8262",
+        "amountOut": "333430.891836380128838715",
+        "name": "RFOX",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.276235278427438733",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0xff20817765cb7f73d4bde2e66e067e58d11095c2",
+        "amountOut": "438152.824671387387277536",
+        "name": "Amp",
+        "dex": "SushiSwap"
+      }
+    ]
+  }
+}
+
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "name": "Tether USD"
+  },
+  "path": {
+    "Uniswap V2": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.195179586203722639",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+        "amountOut": "4391.381753140299121942",
+        "name": "Polkastarter",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "592931867854195.825218",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ],
+    "SushiSwap": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.181752914737119453",
+        "name": "Wrapped Ether",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3974.066807",
+        "name": "Tether USD",
+        "dex": "SushiSwap"
+      }
+    ],
+    "PancakeSwap": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.150695136028484066",
+        "name": "Wrapped Ether",
+        "dex": "PancakeSwap"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3792.337482",
+        "name": "Tether USD",
+        "dex": "PancakeSwap"
+      }
+    ],
+    "Uniswap V3": [
+      {
+        "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "amountOut": "4010.803447820730825876",
+        "name": "Dai Stablecoin",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.207620940456710369",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "4055.985298",
+        "name": "Tether USD",
+        "dex": "Uniswap V3"
+      }
+    ],
+    "All": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.205810957370341004",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+        "amountOut": "4449.476250112414465753",
+        "name": "Polkastarter",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "600677129887764.706908",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ]
+  }
+}
+
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "name": "Tether USD"
+  },
+  "path": {
+    "Uniswap V2": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.195179586203722639",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+        "amountOut": "4391.381753140299121942",
+        "name": "Polkastarter",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "592931867854195.825218",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ],
+    "SushiSwap": "No Path found",
+    "PancakeSwap": "No Path found",
+    "Uniswap V3": "No Path found",
+    "All": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.195179586203722639",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0x83e6f1e41cdd28eaceb20cb649155049fac3d5aa",
+        "amountOut": "4391.381753140299121942",
+        "name": "Polkastarter",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "592931867854195.825218",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ]
+  }
+}
+
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "name": "Tether USD"
+  },
+  "path": {
+    "Uniswap V2": [
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3986.356096",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ],
+    "SushiSwap": "No Path found",
+    "PancakeSwap": "No Path found",
+    "Uniswap V3": "No Path found",
+    "All": [
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3986.356096",
+        "name": "Tether USD",
+        "dex": "Uniswap V2"
+      }
+    ]
+  }
+}
+
+{
+    "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "tokenOutAddress": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+    "amount": "4000",
+    "userFriendly" : true
+}
+
+{
+  "tokenIn": {
+    "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "name": "USDCoin",
+    "amount": "4000"
+  },
+  "tokenOut": {
+    "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+    "name": "ApeCoin"
+  },
+  "path": {
+    "Uniswap V2": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.235867655326909843",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+        "amountOut": "2094.891997677430092478",
+        "name": "ApeCoin",
+        "dex": "Uniswap V2"
+      }
+    ],
+    "SushiSwap": [
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.181752914737119453",
+        "name": "Wrapped Ether",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "amountOut": "3974.066807",
+        "name": "Tether USD",
+        "dex": "SushiSwap"
+      },
+      {
+        "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+        "amountOut": "1419.317649060941117256",
+        "name": "ApeCoin",
+        "dex": "SushiSwap"
+      }
+    ],
+    "PancakeSwap": "No Path found",
+    "Uniswap V3": "No Path found",
+    "All": [
+      {
+        "address": "0x5732046a883704404f284ce41ffadd5b007fd668",
+        "amountOut": "18460.166571152806264878",
+        "name": "Bluzelle",
+        "dex": "Uniswap V3"
+      },
+      {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "amountOut": "1.673169316306438201",
+        "name": "Wrapped Ether",
+        "dex": "Uniswap V2"
+      },
+      {
+        "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
+        "amountOut": "2769.337841424160643534",
+        "name": "ApeCoin",
+        "dex": "Uniswap V2"
+      }
+    ]
+  }
+}
