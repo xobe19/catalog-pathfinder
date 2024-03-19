@@ -116,7 +116,7 @@ async function main() {
 
   const pairAddressesFilePath = path.join(
     __dirname,
-    "data",
+    "../../data",
     "pancakeswapPairs.txt"
   );
 

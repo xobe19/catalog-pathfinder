@@ -74,5 +74,3 @@ async function main() {
   }
   await updateTimeStamp();
 }
-
-main();
