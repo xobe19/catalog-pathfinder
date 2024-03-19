@@ -9,6 +9,7 @@ const jsbi_1 = __importDefault(require("jsbi"));
 function logg(message, ...optionalParams) {
     // console.log(message, ...optionalParams);
 }
+/* TODO: subtract fee from input amt, not output amt */
 function getAmountOutV3(baseAmount, tick, baseToken, quoteToken, fees) {
     //  ? Tick => sqrt96
     //  ? ratioX192 = sqrt96 ^ 2

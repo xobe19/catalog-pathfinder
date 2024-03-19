@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const multicall_1 = require("./multicall");
 const timestamp_1 = require("../timestamp");
+const multicall_1 = require("./multicall");
 const prisma = new client_1.PrismaClient();
 function getMulticallBatch(pairAddresses, start, size) {
     const calls = [];
@@ -35,7 +35,7 @@ function getValuesStringFromExecuteCallsResult(pairAddress, executeCallsResults)
             token0Reserve: reserves[0].toString(),
             token1Reserve: reserves[1].toString(),
         };
-        ret.push(`('${pair.address}', '${pair.token0Reserve}', '${pair.token1Reserve}')`);
+        ret.push(`('${pair.address.toLowerCase()}', '${pair.token0Reserve}', '${pair.token1Reserve}')`);
     }
     return ret;
 }
@@ -50,7 +50,7 @@ function toDbUpdateQuery(pairAddresses, results) {
 async function main() {
     console.log(new Date().toLocaleString());
     console.time("service time");
-    const pairAddressesFilePath = path_1.default.join(__dirname, "data", "uniswap_v2_pair_addresses.csv");
+    const pairAddressesFilePath = path_1.default.join(__dirname, "../../data", "uniswap_v2_pair_addresses.csv");
     try {
         const fileRef = fs_1.default.readFileSync(pairAddressesFilePath, "utf-8");
         const pairAddresses = fileRef.split("\n");

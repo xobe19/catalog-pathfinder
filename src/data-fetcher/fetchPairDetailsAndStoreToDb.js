@@ -39,10 +39,10 @@ function getPairDetailsFromExecuteCallsResult(pairAddress, executeCallsResults) 
         const reserves = executeCallsResults[i + 0];
         const token0 = executeCallsResults[i + 1];
         const token1 = executeCallsResults[i + 2];
-        const token0Address = token0[0].toString();
-        const token1Address = token1[0].toString();
+        const token0Address = token0[0].toString().toLowerCase();
+        const token1Address = token1[0].toString().toLowerCase();
         const pair = {
-            address: pairAddress[j++],
+            address: pairAddress[j++].toLowerCase(),
             token0Address,
             token1Address,
             token0Reserve: reserves[0].toString(),
@@ -66,7 +66,7 @@ async function main() {
     // clear the db first
     await prisma.pair.deleteMany({});
     console.log("db cleared");
-    const pairAddressesFilePath = path_1.default.join(__dirname, "data", "uniswap_v2_pair_addresses.csv");
+    const pairAddressesFilePath = path_1.default.join(__dirname, "../../data", "uniswap_v2_pair_addresses.csv");
     try {
         const fileRef = fs_1.default.readFileSync(pairAddressesFilePath, "utf-8");
         const pairAddresses = fileRef.split("\n");

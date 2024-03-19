@@ -69,7 +69,7 @@ async function main() {
     // ! clear the db first
     await prisma.pairSushiSwap.deleteMany({});
     console.log("db cleared");
-    const pairAddressesFilePath = path_1.default.join(__dirname, "data", "sushiswapPairs.txt");
+    const pairAddressesFilePath = path_1.default.join(__dirname, "../../data", "sushiswapPairs.txt");
     try {
         const fileRef = fs_1.default.readFileSync(pairAddressesFilePath, "utf-8");
         const pairAddresses = fileRef.split("\n");
