@@ -1,88 +1,58 @@
 import { Pair, PairPancakeSwap, PairSushiSwap, PairV3 } from "@prisma/client";
 import { Result } from "ethers";
 import { prepareCall } from "./data-fetcher/multicall";
-import { dexes } from "./services/find_path";
+
+/* --------------------------------- Utils ---------------------------------- */
 
 // https://stackoverflow.com/questions/41285211/overriding-interface-property-type-defined-in-typescript-d-ts-file/55032655#55032655
 type Modify<T, R> = Omit<T, keyof R> & R;
 
+type ValueOf<T> = T[keyof T];
+
+export type WithVersion<T> = T & { version: Dexes };
+
+export type BigIntReserves<
+  T extends { token0Reserve: string; token1Reserve: string }
+> = Modify<
+  T,
+  {
+    token0Reserve: bigint;
+    token1Reserve: bigint;
+  }
+>;
+
+/* -------------------------------- Services -------------------------------- */
+
+export type Dexes =
+  | "Uniswap V2"
+  | "SushiSwap"
+  | "PancakeSwap"
+  | "Uniswap V3"
+  | "All";
+
+export type ModifiedPairV2 = WithVersion<BigIntReserves<Pair>>;
+export type ModifiedPairV3 = WithVersion<
+  Pick<PairV3, "address" | "fees" | "token0Address" | "token1Address" | "tick">
+>;
+
+export type UsableDexes =
+  | WithVersion<BigIntReserves<Pair>>
+  | WithVersion<BigIntReserves<PairSushiSwap>>
+  | WithVersion<BigIntReserves<PairPancakeSwap>>
+  | ModifiedPairV3;
+
+export interface PathMember {
+  address: string;
+  amountOut: string;
+  dex: Dexes;
+}
+
 export type Aggregate3Response = { success: boolean; returnData: string };
+
 export type decodeFunction = (
   result: Aggregate3Response,
   call: ReturnType<typeof prepareCall>
 ) => Result;
-
-export interface QuoteBody {
-  tokenInAddress: string;
-  tokenOutAddress: string;
-  userFriendly: boolean;
-  amount: string;
-}
-
-export interface QuoteInputToken {
-  address: string;
-  amount: string;
-  name: string;
-}
-
-export interface QuoteOutputToken {
-  address: string;
-  name: string;
-}
-
-export type ValueOf<T> = T[keyof T];
-
-export interface QuotePathMember {
-  address: string;
-  amountOut: string;
-  name: string;
-  dex: ValueOf<typeof dexes>;
-}
-
-export interface QuoteResponse {
-  tokenIn: QuoteInputToken;
-  path: {
-    [k in ValueOf<typeof dexes>]: QuotePathMember[] | string;
-  };
-  tokenOut: QuoteOutputToken;
-}
-
-export interface Call3 {
-  target: string;
-  allowFailure: boolean;
-  callData: string;
-}
-
-export type PairBigInt = Modify<
-  Pair,
-  {
-    token0Reserve: bigint;
-    token1Reserve: bigint;
-  }
-> & { version: "Uniswap V2" };
-
-export type PairV3BigInt = Pick<
-  PairV3,
-  "address" | "fees" | "token0Address" | "token1Address" | "tick"
-> & {
-  version: "Uniswap V3";
-};
-
-export type SushiPairBigInt = Modify<
-  PairSushiSwap,
-  {
-    token0Reserve: bigint;
-    token1Reserve: bigint;
-  }
-> & { version: "SushiSwap" };
-
-export type PancakeSwapPairBigInt = Modify<
-  PairPancakeSwap,
-  {
-    token0Reserve: bigint;
-    token1Reserve: bigint;
-  }
-> & { version: "PancakeSwap" };
 
 export type swapExactTokensForTokensArgs = {
   amountIn: bigint;
@@ -103,3 +73,41 @@ export type tenderlyTxObj = {
   to: string;
   input: string;
 };
+
+/* ------------------------------- Controller ------------------------------- */
+
+export interface QuoteBody {
+  tokenInAddress: string;
+  tokenOutAddress: string;
+  userFriendly: boolean;
+  amount: string;
+}
+
+export interface QuoteInputToken {
+  address: string;
+  amount: string;
+  name: string;
+}
+
+export interface QuoteOutputToken {
+  address: string;
+  name: string;
+}
+
+export interface QuotePathMember extends PathMember {
+  name: string;
+}
+
+export interface QuoteResponse {
+  tokenIn: QuoteInputToken;
+  path: {
+    [k in Dexes]: QuotePathMember[] | string;
+  };
+  tokenOut: QuoteOutputToken;
+}
+
+export interface Call3 {
+  target: string;
+  allowFailure: boolean;
+  callData: string;
+}
