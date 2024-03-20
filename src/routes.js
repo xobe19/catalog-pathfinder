@@ -25,29 +25,24 @@ exports.router.get("/health", (req, res) => {
         res.send(error);
     }
 });
-function findPathResultToResponse(resultPath, tokenMap, userFriendly) {
-    if (typeof resultPath === "string") {
-        return resultPath;
+function findPathResultToResponse(paths, tokenMap, userFriendly) {
+    let dex;
+    for (dex in paths) {
+        for (const path of paths[dex]) {
+            if (typeof path !== "string") {
+                const decimals = tokenMap.get(path.address)?.decimals;
+                // add name to path
+                path.name = tokenMap.get(path.address)?.name ?? "";
+                // format number with decimals
+                path.amountOut =
+                    userFriendly && decimals
+                        ? (0, ethers_1.formatUnits)(path.amountOut, decimals)
+                        : path.amountOut;
+            }
+        }
     }
-    return resultPath.slice(1).map((ele) => {
-        const [address, amount, dex] = ele;
-        const decimals = tokenMap.get(address)?.decimals;
-        const name = tokenMap.get(address)?.name;
-        return {
-            address: ele[0],
-            amountOut: userFriendly && decimals ? (0, ethers_1.formatUnits)(amount, decimals) : amount,
-            name: name ?? "",
-            dex,
-        };
-    });
+    return paths;
 }
-/*
-{
-  "tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "tokenOutAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  "amount": "4000000000"
-}
-*/
 exports.router.post("/quote", async (req, res) => {
     try {
         const { amount, userFriendly } = req.body;
@@ -76,24 +71,18 @@ exports.router.post("/quote", async (req, res) => {
         }
         console.log(new Date() + ": ");
         console.log(req.body);
-        const path = await (0, find_path_1.findPaths)(tokenInAddress, tokenOutAddress, userFriendly ? amountFromUserFriendly : BigInt(amount));
-        /* TODO: make sure it only accepts all dexes, nothing less, nothing more */
-        const pathValues = [
-            path[find_path_1.dexes.uniswapV2],
-            path[find_path_1.dexes.uniswapV3],
-            path[find_path_1.dexes.sushiSwap],
-            path[find_path_1.dexes.pancakeSwap],
-            path[find_path_1.dexes.all],
-        ];
-        const addrs = new Set();
-        for (const val of pathValues) {
-            if (typeof val !== "string") {
-                val.forEach((e) => addrs.add(e[0]));
+        const paths = await (0, find_path_1.findPaths)(tokenInAddress, tokenOutAddress, userFriendly ? amountFromUserFriendly : BigInt(amount));
+        const uniqueTokens = new Set();
+        let dex;
+        for (dex in paths) {
+            const path = paths[dex];
+            if (typeof path !== "string") {
+                path.forEach((e) => uniqueTokens.add(e.address));
             }
         }
         const tokens = await dbClient_1.prisma.token.findMany({
             where: {
-                id: { in: Array.from(addrs) },
+                id: { in: Array.from(uniqueTokens) },
             },
         });
         const tokenMap = new Map();
@@ -110,13 +99,7 @@ exports.router.post("/quote", async (req, res) => {
                 address: tokenOut.id,
                 name: tokenOut.name ?? "",
             },
-            path: {
-                [find_path_1.dexes.uniswapV2]: findPathResultToResponse(path[find_path_1.dexes.uniswapV2], tokenMap, userFriendly),
-                [find_path_1.dexes.sushiSwap]: findPathResultToResponse(path[find_path_1.dexes.sushiSwap], tokenMap, userFriendly),
-                [find_path_1.dexes.pancakeSwap]: findPathResultToResponse(path[find_path_1.dexes.pancakeSwap], tokenMap, userFriendly),
-                [find_path_1.dexes.uniswapV3]: findPathResultToResponse(path[find_path_1.dexes.uniswapV3], tokenMap, userFriendly),
-                [find_path_1.dexes.all]: findPathResultToResponse(path[find_path_1.dexes.all], tokenMap, userFriendly),
-            },
+            path: findPathResultToResponse(paths, tokenMap, userFriendly),
         };
         res.json(ret);
     }
