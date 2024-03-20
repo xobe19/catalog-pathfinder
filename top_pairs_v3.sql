@@ -1,4 +1,5 @@
-delete from "PairV3"
+delete from
+  "PairV3"
 where
   "address" not in (
     select
@@ -6,7 +7,11 @@ where
     from
       "PairV3"
     where
-      "token0Address" = '0x66a0f676479cee1d7373f3dc2e2952778bff5bd6'
+      "token0Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+      and "token1Address" = '0x4d224452801aced8b2f0aebe155379bb5d594381'
+      or "token1Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+      and "token0Address" = '0x4d224452801aced8b2f0aebe155379bb5d594381'
+      or "token0Address" = '0x66a0f676479cee1d7373f3dc2e2952778bff5bd6'
       and "token1Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
       or "token0Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
       and "token1Address" = '0xdac17f958d2ee523a2206206994597c13d831ec7'
@@ -1004,6 +1009,6 @@ where
       and "token1Address" = '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d'
       or "token0Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
       and "token1Address" = '0xe3dbc4f88eaa632ddf9708732e2832eeaa6688ab'
-      or "token0Address" ='0x5eed99d066a8caf10f3e4327c1b3d8b673485eed'
+      or "token0Address" = '0x5eed99d066a8caf10f3e4327c1b3d8b673485eed'
       and "token1Address" = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
   )
