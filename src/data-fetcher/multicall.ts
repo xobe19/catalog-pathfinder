@@ -40,6 +40,7 @@ export function prepareCall(
     functionInterface,
     call,
     decodeResult,
+    args,
   };
 }
 

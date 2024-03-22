@@ -2,6 +2,8 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { PairV3, PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 import { updateTimeStamp } from "../timestamp";
+import { decodeFunction } from "../types";
+import { executeCalls, prepareCall } from "./multicall";
 dotenv.config();
 
 const GRAPHQL_URL = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
@@ -51,7 +53,8 @@ async function main() {
         skip: i,
       },
     });
-    const primseToDB: PairV3[] = res.data.pools.map((e: any) => {
+
+    const prismaWithOutHolding: any[] = res.data.pools.map((e: any) => {
       const tick = e.tick ? parseInt(e.tick) : 0;
       return {
         address: e.id,
@@ -67,8 +70,43 @@ async function main() {
         token1Symbol: e.token1.symbol,
       };
     });
+
+    const Abi =
+      "function balanceOf(address account) external view returns (uint256)";
+    const calls = [];
+    for (let i = 0; i < prismaWithOutHolding.length; i++) {
+      const contractAddress = prismaWithOutHolding[i].address;
+      const token0Address = prismaWithOutHolding[i].token0Address;
+      const token1Address = prismaWithOutHolding[i].token1Address;
+
+      const singleCall = [
+        prepareCall(token0Address, "balanceOf", Abi, [contractAddress]),
+        prepareCall(token1Address, "balanceOf", Abi, [contractAddress]),
+      ];
+      calls.push(...singleCall);
+    }
+    const decode: decodeFunction = (result, call) => {
+      try {
+        return call.decodeResult(result.returnData)[0];
+      } catch (e) {
+        return 0;
+      }
+    };
+    const result = await executeCalls(calls, decode);
+
+    const prismaToDB: PairV3[] = [];
+    let k = 0;
+    for (let i = 0; i < result.length; i += 2) {
+      const p: PairV3 = {
+        token0Balance: result[i].toString(),
+        token1Balance: result[i + 1].toString(),
+        ...prismaWithOutHolding[k++],
+      };
+      prismaToDB.push(p);
+    }
+
     await prisma.pairV3.createMany({
-      data: primseToDB,
+      data: prismaToDB,
     });
     console.log(`pushed ${i} to db `);
   }

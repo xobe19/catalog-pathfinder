@@ -10,7 +10,7 @@ async function getMulticallBatch(
   size: number,
   isLiquidityCall: boolean
 ) {
-  const calls = [];
+  const calls: any = [];
 
   for (let i = 0; i < pairAddresses.length; i += size) {
     const start = i;
