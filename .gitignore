@@ -4,3 +4,4 @@ dist/
 *.db
 .vscode/
 .DS_Store
+.obsidian/

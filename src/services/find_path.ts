@@ -1,6 +1,7 @@
 import tokensJson from "../../data/extended_uniswap.json";
 import {
   Dexes,
+  IntermediatePathMember,
   ModifiedPairV2,
   ModifiedPairV3,
   PathMember,
@@ -17,7 +18,7 @@ let safeTokens = new Set<string>(
 
 function disp(
   addr: Set<String>,
-  intermediate_path: Set<bigint>,
+  intermediate_path: Set<IntermediatePathMember>,
   token_from_pool: Array<Dexes>
 ) {
   let len = addr.size;
@@ -26,10 +27,13 @@ function disp(
 
   const ret: PathMember[] = [];
   for (let i = 0; i < len; i++) {
+    const it2val = itr_2.next().value;
     ret.push({
       address: itr_1.next().value.toLowerCase(),
-      amountOut: itr_2.next().value.toString(),
+      amountOut: it2val.amount.toString(),
       dex: token_from_pool[i],
+      fees: it2val.fees,
+      poolAddress: it2val.poolAddress,
     });
   }
   return ret.slice(1);
@@ -138,7 +142,7 @@ export async function findPath(
     [key in string]: {
       path: Set<String>;
       qty: bigint;
-      intermediate_path: Set<bigint>;
+      intermediate_path: Set<IntermediatePathMember>;
       token_from_pool: Array<Dexes>;
     };
   } = {};
@@ -150,7 +154,11 @@ export async function findPath(
     token_from_pool: new Array(),
   };
   queue[inTokenAddress].path.add(inTokenAddress);
-  queue[inTokenAddress].intermediate_path.add(inAmt);
+  queue[inTokenAddress].intermediate_path.add({
+    amount: inAmt,
+    poolAddress: "",
+    fees: 0,
+  });
   queue[inTokenAddress].token_from_pool.push("-" as Dexes);
 
   let HOPS = 3;
@@ -160,7 +168,7 @@ export async function findPath(
       [key in string]: {
         path: Set<String>;
         qty: bigint;
-        intermediate_path: Set<bigint>;
+        intermediate_path: Set<IntermediatePathMember>;
         token_from_pool: Array<Dexes>;
       };
     } = {};
@@ -213,7 +221,12 @@ export async function findPath(
           let new_intermediate_path = new Set(qd.intermediate_path);
           let new_token_from_pool = [...qd.token_from_pool];
           new_path.add(neighbour);
-          new_intermediate_path.add(new_qty);
+          new_intermediate_path.add({
+            amount: new_qty,
+            poolAddress: p.address,
+            fees:
+              p.version !== "Uniswap V3" ? 3000 : (p as ModifiedPairV3).fees,
+          });
           new_token_from_pool.push(p.version);
 
           new_queue[neighbour] = {

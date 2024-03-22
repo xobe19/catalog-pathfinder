@@ -41,10 +41,18 @@ export type UsableDexes =
   | WithVersion<BigIntReserves<PairPancakeSwap>>
   | ModifiedPairV3;
 
+export interface IntermediatePathMember {
+  amount: bigint;
+  poolAddress: string;
+  fees: number;
+}
+
 export interface PathMember {
   address: string;
   amountOut: string;
   dex: Dexes;
+  fees: number;
+  poolAddress: string;
 }
 
 export type Aggregate3Response = { success: boolean; returnData: string };

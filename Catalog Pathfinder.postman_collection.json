@@ -1,145 +1,141 @@
 {
-	"info": {
-		"_postman_id": "3455e78f-8130-4057-9e6b-4fb5feffdc57",
-		"name": "Catalog Pathfinder",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "33551009"
-	},
-	"item": [
-		{
-			"name": "health",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://18.60.247.88/health"
-			},
-			"response": []
-		},
-		{
-			"name": "1INCH - DAI",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\"tokenInAddress\": \"0x111111111117dC0aa78b770fA6A738034120C302\",\n\"tokenOutAddress\": \"0x6b175474e89094c44da98b954eedeac495271d0f\",\n\"amount\": \"1\",\n\"userFriendly\" : true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://localhost:3000/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "path-with-decimals",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "// ? Swap USDC->USDT Amountin = 4000 USDC\n // Decimals\n{\n    \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n    \"tokenOutAddress\": \"0xdac17f958d2ee523a2206206994597c13d831ec7\",\n    \"amount\": \"4000000000\",\n    \"userFriendly\" : false\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "WETH - MKR",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"tokenInAddress\": \"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\n    \"tokenOutAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "WETH - APE",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n\"tokenOutAddress\": \"0x4d224452801aced8b2f0aebe155379bb5d594381\",\n\"amount\": \"1\",\n\"userFriendly\" : true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "MKR-SHIBA INU",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"tokenInAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"tokenOutAddress\": \"0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "WETH-WBTC",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"tokenInAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"tokenOutAddress\": \"0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		},
-		{
-			"name": "USDC-SEED",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"tokenInAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"tokenOutAddress\": \"0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": "http://18.60.247.88/quote"
-			},
-			"response": []
-		}
-	]
+  "v": 2,
+  "name": "Catalog Pathfinder",
+  "folders": [],
+  "requests": [
+    {
+      "v": "1",
+      "name": "health",
+      "endpoint": "http://18.60.247.88/health",
+      "method": "GET",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": { "contentType": null, "body": null },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "1INCH - DAI",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n\"tokenInAddress\": \"0x111111111117dC0aa78b770fA6A738034120C302\",\n\"tokenOutAddress\": \"0x6b175474e89094c44da98b954eedeac495271d0f\",\n\"amount\": \"4000\",\n\"userFriendly\" : true\n}"
+      },
+      "preRequestScript": "/*\nsushi path on website:\n1inch to weth thr v3\nweth to dai thr v3\n*/",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "path-with-decimals",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "// ? Swap USDC->USDT Amountin = 4000 USDC\n // Decimals\n{\n    \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n    \"tokenOutAddress\": \"0xdac17f958d2ee523a2206206994597c13d831ec7\",\n    \"amount\": \"4000000000\",\n    \"userFriendly\" : false\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "WETH - MKR",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"tokenInAddress\": \"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\n    \"tokenOutAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "WETH - APE",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n\"tokenInAddress\": \"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\n\"tokenOutAddress\": \"0x4d224452801aced8b2f0aebe155379bb5d594381\",\n\"amount\": \"1\",\n\"userFriendly\" : true\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "MKR-SHIBA INU",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"tokenInAddress\": \"0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2\",\n    \"tokenOutAddress\": \"0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "WETH-WBTC",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"tokenInAddress\": \"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\",\n    \"tokenOutAddress\": \"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599\",\n    \"amount\": \"1\",\n    \"userFriendly\": true\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "USDC-SEED",
+      "endpoint": "http://18.60.247.88/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n    \"tokenOutAddress\": \"0x5eed99d066a8CaF10f3E4327c1b3D8b673485eED\",\n    \"amount\": \"4000000000\",\n    \"userFriendly\": false\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    },
+    {
+      "v": "1",
+      "name": "local",
+      "endpoint": "http://localhost:8088/quote",
+      "method": "POST",
+      "headers": [],
+      "params": [],
+      "auth": { "authType": "none", "authActive": true },
+      "body": {
+        "contentType": "application/json",
+        "body": "{\n    \"tokenInAddress\": \"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48\",\n    \"tokenOutAddress\": \"0x5eed99d066a8caf10f3e4327c1b3d8b673485eed\",\n    \"amount\": \"4000000000\",\n    \"userFriendly\": false\n}"
+      },
+      "preRequestScript": "",
+      "testScript": ""
+    }
+  ],
+  "auth": { "authType": "inherit", "authActive": true },
+  "headers": []
 }

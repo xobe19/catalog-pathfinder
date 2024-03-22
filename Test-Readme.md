@@ -8,7 +8,7 @@ test time - Mar 21 2024 12.03 AM
 ```
 {
 
-"tokenInAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+"tokenInAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 "tokenOutAddress": "0x4d224452801aced8b2f0aebe155379bb5d594381",
 "amount": "4000",
 "userFriendly": true
@@ -110,16 +110,12 @@ test time - Mar 21 2024 12.03 AM
 | EXCHANGE    | exchange result | router result | status |
 | ----------- | --------------- | ------------- | ------ |
 | uniswap v2  | no path         |               |        |
-| uniswap v3  | 7471.25         | 7780          | ✅     |
+| uniswap v3  | 7471.25         | 7780          | ✅      |
 | pancakeswap | no path         | no path       |        |
-| sushiswap   | no path         | no path       | ✅     |
+| sushiswap   | no path         | no path       | ✅      |
 
-Inch - 0x111111111117dC0aa78b770fA6A738034120C302
-dai - 0x6b175474e89094c44da98b954eedeac495271d0f
-weth - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
-wbtc - 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
-SEED - 0x5eed99d066a8CaF10f3E4327c1b3D8b673485eED
-USDC - 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-shibha inu- 0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE
-MKR - 0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2
-APE COIN - 0x4d224452801aced8b2f0aebe155379bb5d594381
+
+---
+
+#2024-03-22
+
