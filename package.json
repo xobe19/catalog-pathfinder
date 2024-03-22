@@ -21,6 +21,7 @@
     "@prisma/client": "^5.10.2",
     "@uniswap/v3-sdk": "^3.11.0",
     "axios": "^1.6.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ethers": "^6.11.1",
     "express": "^4.18.3",

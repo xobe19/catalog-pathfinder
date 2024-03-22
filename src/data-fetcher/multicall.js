@@ -31,6 +31,7 @@ function prepareCall(contractAddress, functionName, interfaceAbi, args) {
         functionInterface,
         call,
         decodeResult,
+        args,
     };
 }
 exports.prepareCall = prepareCall;

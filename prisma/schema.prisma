@@ -30,9 +30,11 @@ model PairV3 {
   token0Address  String
   token0Decimals Int
   token0Symbol   String
+  token0Balance  String
   token1Address  String
   token1Decimals Int
   token1Symbol   String
+  token1Balance  String
 }
 
 model PairSushiSwap {
