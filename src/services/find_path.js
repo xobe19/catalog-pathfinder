@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findPaths = exports.findPath = void 0;
-const extended_uniswap_json_1 = __importDefault(require("../../data/extended_uniswap.json"));
+const default_uniswap_json_1 = __importDefault(require("../../data/default_uniswap.json"));
 const dbClient_1 = require("./dbClient");
 const getAmountV3_1 = require("./getAmountV3");
-let safeTokens = new Set(extended_uniswap_json_1.default["tokens"]
+let safeTokens = new Set(default_uniswap_json_1.default["tokens"]
     .filter((e) => e.chainId === 1)
     .map((e) => e.address.toLowerCase()));
 function disp(addr, intermediate_path, token_from_pool) {
@@ -75,11 +75,13 @@ async function getReservesFromDb() {
         tick: e.tick,
         fees: e.fees,
         version: "Uniswap V3",
+        token0Balance: BigInt(e.token0Balance),
+        token1Balance: BigInt(e.token1Balance),
     }));
     return toRet;
 }
 function getOutV2(in_token_res, out_token_res, inTokenAmt) {
-    let qty_token1_recieve = null;
+    let qty_token1_receive = null;
     let st = BigInt(1), en = out_token_res;
     while (st <= en) {
         let mid = (st + en) / BigInt(2);
@@ -88,16 +90,16 @@ function getOutV2(in_token_res, out_token_res, inTokenAmt) {
                 ((out_token_res - mid) * BigInt(1000)) >=
                 in_token_res * out_token_res * BigInt(1000000);
         if (condition) {
-            qty_token1_recieve = mid;
+            qty_token1_receive = mid;
             st = mid + BigInt(1);
         }
         else {
             en = mid - BigInt(1);
         }
     }
-    return qty_token1_recieve;
+    return qty_token1_receive;
 }
-async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToExclude, dexes) {
+async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToExclude, hops = 3, dexes) {
     // console.log(graph[data.gooch.address]);
     let queue = {};
     queue[inTokenAddress] = {
@@ -113,7 +115,7 @@ async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToE
         fees: 0,
     });
     queue[inTokenAddress].token_from_pool.push("-");
-    let HOPS = 3;
+    let HOPS = hops;
     while (HOPS-- > 0) {
         let new_queue = {};
         for (let addr in queue) {
@@ -150,6 +152,12 @@ async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToE
                 else {
                     const typedP = p;
                     new_qty = (0, getAmountV3_1.getAmountOutV3)(qd.qty.toString(), typedP.tick, addr, neighbour, typedP.fees);
+                    const tokenOutBalance = neighbour === typedP.token0Address
+                        ? typedP.token0Balance
+                        : typedP.token1Balance;
+                    if (!(new_qty < tokenOutBalance)) {
+                        new_qty = BigInt(0);
+                    }
                 }
                 if (!new_qty)
                     continue;
@@ -183,7 +191,7 @@ async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToE
     return s;
 }
 exports.findPath = findPath;
-async function findPaths(inTokenAddress, outTokenAddress, inAmt) {
+async function findPaths(inTokenAddress, outTokenAddress, inAmt, hops) {
     const graph = {};
     const reserves = await getReservesFromDb();
     console.log(`fetched ${reserves.length} rows from db`);
@@ -198,7 +206,7 @@ async function findPaths(inTokenAddress, outTokenAddress, inAmt) {
         graph[token1].push([token0, pair]);
     }
     let exclude = new Set();
-    let boundFunction = findPath.bind(null, inTokenAddress, outTokenAddress, inAmt, graph, exclude);
+    let boundFunction = findPath.bind(null, inTokenAddress, outTokenAddress, inAmt, graph, exclude, hops);
     let a = new Set();
     let b = new Set();
     let c = new Set();

@@ -46,7 +46,7 @@ function findPathResultToResponse(paths, tokenMap, userFriendly) {
 }
 exports.router.post("/quote", async (req, res) => {
     try {
-        const { amount, userFriendly } = req.body;
+        const { amount, userFriendly, hops } = req.body;
         const tokenInAddress = req.body.tokenInAddress.toLowerCase();
         const tokenOutAddress = req.body.tokenOutAddress.toLowerCase();
         const many = await dbClient_1.prisma.token.findMany({
@@ -72,7 +72,7 @@ exports.router.post("/quote", async (req, res) => {
         }
         console.log(new Date() + ": ");
         console.log(req.body);
-        const paths = await (0, find_path_1.findPaths)(tokenInAddress, tokenOutAddress, userFriendly ? amountFromUserFriendly : BigInt(amount));
+        const paths = await (0, find_path_1.findPaths)(tokenInAddress, tokenOutAddress, userFriendly ? amountFromUserFriendly : BigInt(amount), hops);
         const uniqueTokens = new Set();
         let dex;
         for (dex in paths) {
