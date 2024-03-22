@@ -5,6 +5,7 @@ import fs from "fs";
 import nodepath from "path";
 import { prisma } from "./services/dbClient";
 import { findPaths } from "./services/find_path";
+import { getSushiSwapUrl, getUniswapUrl } from "./services/getDexUrls";
 import { QuoteBody, QuotePathMember, QuoteResponse } from "./types";
 
 export const router = Router();
@@ -120,6 +121,8 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
         address: tokenOut.id,
         name: tokenOut.name ?? "",
       },
+      uniswapUrl: getUniswapUrl(tokenIn.id, tokenOut.id),
+      sushiUrl: getSushiSwapUrl(tokenIn.id, tokenOut.id),
       path: findPathResultToResponse(paths, tokenMap, userFriendly),
     };
 

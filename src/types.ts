@@ -112,6 +112,8 @@ export interface QuoteResponse {
     [k in Dexes]: QuotePathMember[] | string;
   };
   tokenOut: QuoteOutputToken;
+  uniswapUrl: string;
+  sushiUrl: string;
 }
 
 export interface Call3 {
