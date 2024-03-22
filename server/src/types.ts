@@ -32,7 +32,19 @@ export type Dexes =
 
 export type ModifiedPairV2 = WithVersion<BigIntReserves<Pair>>;
 export type ModifiedPairV3 = WithVersion<
-  Pick<PairV3, "address" | "fees" | "token0Address" | "token1Address" | "tick">
+  Modify<
+    Pick<
+      PairV3,
+      | "address"
+      | "fees"
+      | "token0Address"
+      | "token1Address"
+      | "tick"
+      | "token0Balance"
+      | "token1Balance"
+    >,
+    { token0Balance: bigint; token1Balance: bigint }
+  >
 >;
 
 export type UsableDexes =
@@ -89,6 +101,7 @@ export interface QuoteBody {
   tokenOutAddress: string;
   userFriendly: boolean;
   amount: string;
+  hops?: number;
 }
 
 export interface QuoteInputToken {

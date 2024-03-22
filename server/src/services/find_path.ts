@@ -1,4 +1,4 @@
-import tokensJson from "../../data/extended_uniswap.json";
+import tokensJson from "../../data/default_uniswap.json";
 import {
   Dexes,
   IntermediatePathMember,
@@ -94,6 +94,8 @@ async function getReservesFromDb(): Promise<UsableDexes[]> {
       tick: e.tick,
       fees: e.fees,
       version: "Uniswap V3",
+      token0Balance: BigInt(e.token0Balance),
+      token1Balance: BigInt(e.token1Balance),
     })
   );
 
@@ -105,7 +107,7 @@ function getOutV2(
   out_token_res: bigint,
   inTokenAmt: bigint
 ) {
-  let qty_token1_recieve = null;
+  let qty_token1_receive = null;
   let st = BigInt(1),
     en = out_token_res;
   while (st <= en) {
@@ -116,14 +118,14 @@ function getOutV2(
         ((out_token_res - mid) * BigInt(1000)) >=
         in_token_res * out_token_res * BigInt(1000000);
     if (condition) {
-      qty_token1_recieve = mid;
+      qty_token1_receive = mid;
 
       st = mid + BigInt(1);
     } else {
       en = mid - BigInt(1);
     }
   }
-  return qty_token1_recieve;
+  return qty_token1_receive;
 }
 
 export async function findPath(
@@ -134,6 +136,7 @@ export async function findPath(
     [key in string]: [string, UsableDexes][];
   },
   tokensToExclude: Set<string>,
+  hops: number = 3,
   dexes: Set<Dexes>
 ): Promise<string | PathMember[]> {
   // console.log(graph[data.gooch.address]);
@@ -161,7 +164,7 @@ export async function findPath(
   });
   queue[inTokenAddress].token_from_pool.push("-" as Dexes);
 
-  let HOPS = 3;
+  let HOPS = hops;
 
   while (HOPS-- > 0) {
     let new_queue: {
@@ -210,6 +213,13 @@ export async function findPath(
             neighbour,
             typedP.fees
           );
+          const tokenOutBalance =
+            neighbour === typedP.token0Address
+              ? typedP.token0Balance
+              : typedP.token1Balance;
+          if (!(new_qty < tokenOutBalance)) {
+            new_qty = BigInt(0);
+          }
         }
 
         if (!new_qty) continue;
@@ -255,7 +265,8 @@ export async function findPath(
 export async function findPaths(
   inTokenAddress: string,
   outTokenAddress: string,
-  inAmt: bigint
+  inAmt: bigint,
+  hops?: number
 ): Promise<{
   [k in Dexes]: string | PathMember[];
 }> {
@@ -283,7 +294,8 @@ export async function findPaths(
     outTokenAddress,
     inAmt,
     graph,
-    exclude
+    exclude,
+    hops
   );
   let a = new Set<Dexes>();
   let b = new Set<Dexes>();

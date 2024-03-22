@@ -1,3 +1,23 @@
+
+- udsc - seed
+	- udsc - dai
+		- pool: 0x6958686b6348c3d6d5f2dca3106a5c09c156873a
+		- L: 163620348564489
+		- udsc balance in pool: 1466791
+		- dai balance in pool: 2127724195946481044
+		- amtIn: 4000000000 udsc
+		- amtOut: 4010803447820730825876 dai
+- usdc - blz
+	- pool: 0xa5e5bca9efae79a446207bc3fea48341394934ad
+	- L: 437926331041
+	- blz balance in pool: 64386755148897731
+	- amtIn: 4000000000 udsc
+	- amtOut: 18460166571152806264878 blz
+- 
+
+
+---
+
 **Average Trade is 2000$ to 4000$**
 
 reserved updated At - Mar 20 2024 11.55 PM

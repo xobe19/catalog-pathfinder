@@ -54,7 +54,7 @@ function findPathResultToResponse(
 
 router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
   try {
-    const { amount, userFriendly } = req.body;
+    const { amount, userFriendly, hops } = req.body;
     const tokenInAddress = req.body.tokenInAddress.toLowerCase();
     const tokenOutAddress = req.body.tokenOutAddress.toLowerCase();
 
@@ -88,7 +88,8 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
     const paths = await findPaths(
       tokenInAddress,
       tokenOutAddress,
-      userFriendly ? amountFromUserFriendly : BigInt(amount)
+      userFriendly ? amountFromUserFriendly : BigInt(amount),
+      hops
     );
 
     const uniqueTokens = new Set<string>();
