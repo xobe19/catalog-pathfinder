@@ -10,6 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const dbClient_1 = require("./services/dbClient");
 const find_path_1 = require("./services/find_path");
+const getDexUrls_1 = require("./services/getDexUrls");
 exports.router = (0, express_1.Router)();
 exports.router.get("/", (req, res) => {
     res.send("Hello world");
@@ -99,6 +100,8 @@ exports.router.post("/quote", async (req, res) => {
                 address: tokenOut.id,
                 name: tokenOut.name ?? "",
             },
+            uniswapUrl: (0, getDexUrls_1.getUniswapUrl)(tokenIn.id, tokenOut.id),
+            sushiUrl: (0, getDexUrls_1.getSushiSwapUrl)(tokenIn.id, tokenOut.id),
             path: findPathResultToResponse(paths, tokenMap, userFriendly),
         };
         res.json(ret);
