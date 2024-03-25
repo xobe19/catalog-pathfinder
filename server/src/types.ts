@@ -23,12 +23,7 @@ export type BigIntReserves<
 
 /* -------------------------------- Services -------------------------------- */
 
-export type Dexes =
-  | "Uniswap V2"
-  | "SushiSwap"
-  | "PancakeSwap"
-  | "Uniswap V3"
-  | "All";
+export type Dexes = "Uniswap V2" | "SushiSwap" | "PancakeSwap" | "Uniswap V3";
 
 export type ModifiedPairV2 = WithVersion<BigIntReserves<Pair>>;
 export type ModifiedPairV3 = WithVersion<

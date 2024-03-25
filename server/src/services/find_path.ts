@@ -300,16 +300,16 @@ export async function findPaths(
   c.add("PancakeSwap");
   d.add("Uniswap V3");
 
-  e.add("SushiSwap");
-  e.add("PancakeSwap");
-  e.add("Uniswap V2");
-  e.add("Uniswap V3");
+  // e.add("SushiSwap");
+  // e.add("PancakeSwap");
+  // e.add("Uniswap V2");
+  // e.add("Uniswap V3");
 
   let uni_v2_data = await boundFunction(a);
   let sushi_data = await boundFunction(b);
   let pancake_data = await boundFunction(c);
   let uni_v3_data = await boundFunction(d);
-  let all_data = await boundFunction(e);
+  // let all_data = await boundFunction(e);
 
   let simulated_output: {
     [key in string]: {
@@ -355,6 +355,15 @@ export async function findPaths(
     SushiSwap: sushi_data,
     PancakeSwap: pancake_data,
     "Uniswap V3": uni_v3_data,
-    All: all_data,
   };
 }
+
+// (async function () {
+//   console.log(
+//     await findPaths(
+//       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+//       "0x5eed99d066a8caf10f3e4327c1b3d8b673485eed",
+//       BigInt("4000000000")
+//     )
+//   );
+// })();
