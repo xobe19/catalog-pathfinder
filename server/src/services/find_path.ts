@@ -9,6 +9,7 @@ import {
 } from "../types";
 import { prisma } from "./dbClient";
 import { getAmountOutV3 } from "./getAmountV3";
+import { getQuoteV3 } from "./getQuoteV3";
 
 let safeTokens = new Set<string>(
   tokensJson["tokens"]
@@ -206,20 +207,12 @@ export async function findPath(
           new_qty = getOutV2(q1.valueOf(), q2.valueOf(), qd.qty);
         } else {
           const typedP = p as ModifiedPairV3;
-          new_qty = getAmountOutV3(
-            qd.qty.toString(),
-            typedP.tick,
+          new_qty = await getQuoteV3(
             addr,
             neighbour,
-            typedP.fees
+            typedP.fees,
+            qd.qty.toString()
           );
-          const tokenOutBalance =
-            neighbour === typedP.token0Address
-              ? typedP.token0Balance
-              : typedP.token1Balance;
-          if (!(new_qty < tokenOutBalance)) {
-            new_qty = BigInt(0);
-          }
         }
 
         if (!new_qty) continue;
