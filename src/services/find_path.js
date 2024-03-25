@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findPaths = exports.findPath = void 0;
 const default_uniswap_json_1 = __importDefault(require("../../data/default_uniswap.json"));
 const dbClient_1 = require("./dbClient");
-const getAmountV3_1 = require("./getAmountV3");
+const getQuoteV3_1 = require("./getQuoteV3");
 let safeTokens = new Set(default_uniswap_json_1.default["tokens"]
     .filter((e) => e.chainId === 1)
     .map((e) => e.address.toLowerCase()));
@@ -151,13 +151,7 @@ async function findPath(inTokenAddress, outTokenAddress, inAmt, graph, tokensToE
                 }
                 else {
                     const typedP = p;
-                    new_qty = (0, getAmountV3_1.getAmountOutV3)(qd.qty.toString(), typedP.tick, addr, neighbour, typedP.fees);
-                    const tokenOutBalance = neighbour === typedP.token0Address
-                        ? typedP.token0Balance
-                        : typedP.token1Balance;
-                    if (!(new_qty < tokenOutBalance)) {
-                        new_qty = BigInt(0);
-                    }
+                    new_qty = await (0, getQuoteV3_1.getQuoteV3)(addr, neighbour, typedP.fees, qd.qty.toString());
                 }
                 if (!new_qty)
                     continue;
