@@ -19,6 +19,7 @@ model Pair {
   token1Address String
   token0Reserve String
   token1Reserve String
+  chainId       Int    @default(1)
 }
 
 model PairV3 {
@@ -35,6 +36,7 @@ model PairV3 {
   token1Decimals Int
   token1Symbol   String
   token1Balance  String
+  chainId        Int    @default(1)
 }
 
 model PairSushiSwap {
@@ -43,6 +45,7 @@ model PairSushiSwap {
   token1Address String
   token0Reserve String
   token1Reserve String
+  chainId       Int    @default(1)
 }
 
 model PairPancakeSwap {
@@ -51,6 +54,7 @@ model PairPancakeSwap {
   token1Address String
   token0Reserve String
   token1Reserve String
+  chainId       Int    @default(1)
 }
 
 model Token {
@@ -58,4 +62,5 @@ model Token {
   symbol   String?
   name     String?
   decimals Int?
+  chainId  Int     @default(1)
 }

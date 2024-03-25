@@ -1,11 +1,10 @@
-import { Pair, PrismaClient } from "@prisma/client";
+import { Pair } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
-import { updateTimeStamp } from "../timestamp";
-import { executeCalls, prepareCall } from "./multicall";
-
-const prisma = new PrismaClient();
+import { prisma } from "../services/dbClient";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
+import { updateTimeStamp } from "./timestamp";
 
 type ResultWithMetadata = {
   results: Result[];

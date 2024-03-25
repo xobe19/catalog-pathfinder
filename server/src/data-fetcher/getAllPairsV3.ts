@@ -1,14 +1,16 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { PairV3, PrismaClient } from "@prisma/client";
+import { PairV3 } from "@prisma/client";
 import dotenv from "dotenv";
-import { updateTimeStamp } from "../timestamp";
+import processEnvSafe from "../safeEnv";
+import { prisma } from "../services/dbClient";
 import { decodeFunction } from "../types";
-import { executeCalls, prepareCall } from "./multicall";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
+import { updateTimeStamp } from "./timestamp";
 dotenv.config();
 
-const GRAPHQL_URL = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
-
-const prisma = new PrismaClient();
+const GRAPHQL_URL = `https://gateway-arbitrum.network.thegraph.com/api/${processEnvSafe(
+  "GRAPH_API_KEY"
+)}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`;
 
 async function main() {
   // !! CLEARING  DB BEFORE UPDATEING

@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
 import { Contract, Interface, JsonRpcProvider } from "ethers";
-import { MULTICALL_ABI_ETHERS, MULTICALL_ADDRESS } from "../constants";
+import { MULTICALL_ADDRESS } from "../constants";
+import processEnvSafe from "../safeEnv";
 import { Aggregate3Response, Call3, decodeFunction } from "../types";
+import { MULTICALL_ABI_ETHERS } from "./abis";
 
 dotenv.config();
 
 // Setup the provider
-const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL;
-if (!MAINNET_RPC_URL)
-  throw new Error("Please set the MAINNET_RPC_URL environment variable.");
+const MAINNET_RPC_URL = processEnvSafe("MAINNET_RPC_URL");
 const provider = new JsonRpcProvider(MAINNET_RPC_URL);
 
 // Get Multicall contract instance.
@@ -69,6 +69,7 @@ export function prepareCallVariable(
 }
 
 export async function executeCalls(
+  contract: Contract,
   calls: ReturnType<typeof prepareCall>[],
   decode: decodeFunction = (result, call) => {
     return call.decodeResult(result.returnData);
@@ -76,7 +77,7 @@ export async function executeCalls(
 ) {
   const call3s = calls.map((call) => call.call);
 
-  const results: Aggregate3Response[] = await multicall.aggregate3.staticCall(
+  const results: Aggregate3Response[] = await contract.aggregate3.staticCall(
     call3s
   );
   return results.map((result, i) => decode(result, calls[i]));

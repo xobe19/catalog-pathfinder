@@ -1,23 +1,17 @@
 import dotenv from "dotenv";
 import { Contract, JsonRpcProvider, ethers } from "ethers";
-import { uniswapV2FactoryABI } from "./data-fetcher/abis";
-import {
-  GOERLI_ETH_URL,
-  UniswapQuoter_ABI,
-  UniswapV2Factory_ADDRESS,
-  UniswapV3Quoter_ADDRESS,
-} from "./constants";
+import { CONTRACT, GOERLI_ETH_URL, UniswapV3Quoter_ADDRESS } from "./constants";
+import { UniswapQuoter_ABI, uniswapV2FactoryABI } from "./data-fetcher/abis";
+import processEnvSafe from "./safeEnv";
+
 dotenv.config();
 
-const ANKR_URL = process.env.MAINNET_RPC_URL;
-if (!ANKR_URL)
-  throw new Error("Please set the MAINNET_RPC_URL environment variable.");
-
+const ANKR_URL = processEnvSafe("MAINNET_RPC_URL");
 export const provider = new JsonRpcProvider(ANKR_URL);
 export const test_provider = new JsonRpcProvider(GOERLI_ETH_URL);
 
 export const uniswapV2FactoryContract = new Contract(
-  UniswapV2Factory_ADDRESS,
+  CONTRACT.ETHEREUM.UNISWAP_V2,
   uniswapV2FactoryABI,
   provider
 );

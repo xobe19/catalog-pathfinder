@@ -2,10 +2,10 @@
 
 // @ts-nocheck
 
-import { executeCalls, prepareCall } from "./multicall";
-import { UniswapV2Factory_ADDRESS } from "../constants";
 import fs from "fs";
 import path from "path";
+import { CONTRACT } from "../constants";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
 
 async function fetchPairAddresses(
   start: number,
@@ -16,7 +16,7 @@ async function fetchPairAddresses(
   // batch all calls
   for (let i = 0; i < count; i++) {
     const prepCall = prepareCall(
-      UniswapV2Factory_ADDRESS,
+      CONTRACT.ETHEREUM.UNISWAP_V2,
       "allPairs",
       "function allPairs(uint) external view returns (address pair)",
       [i + start]
@@ -47,7 +47,7 @@ async function addToCsv(pairs: string[]) {
 
 async function getPairsCount(): Promise<number> {
   const prepCall = prepareCall(
-    UniswapV2Factory_ADDRESS,
+    CONTRACT.ETHEREUM.UNISWAP_V2,
     "allPairsLength",
     "function allPairsLength() external view returns (uint)"
   );

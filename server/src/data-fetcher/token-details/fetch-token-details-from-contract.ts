@@ -1,9 +1,10 @@
 import { Token } from "@prisma/client";
 import dotenv from "dotenv";
 import { Result } from "ethers";
+import { CHAIN_ID } from "../../constants";
 import { prisma } from "../../services/dbClient";
 import { decodeFunction } from "../../types";
-import { executeCalls, prepareCall } from "../multicall";
+import { executeCalls, prepareCall } from "../ethereumMulticall";
 dotenv.config();
 
 /**
@@ -56,6 +57,7 @@ function getTokenDetailsFromExecuteCallsResult(
           ? null
           : symbol.toString().trim(),
       decimals: decimals === null ? null : Number(decimals),
+      chainId: CHAIN_ID.ETHEREUM,
     };
     ret.push(token);
   }

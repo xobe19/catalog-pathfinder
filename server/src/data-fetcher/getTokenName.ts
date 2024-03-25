@@ -1,4 +1,6 @@
 import { Contract, decodeBytes32String } from "ethers";
+import { provider } from "../rpc_setup";
+import processEnvSafe from "../safeEnv";
 import {
   getsymbolAbi,
   symbolABI,
@@ -6,11 +8,8 @@ import {
   symbolABIBytes64,
   upgradableContractABI,
 } from "./abis";
-import { provider } from "../rpc_setup";
 
-export const ETHER_SCAN_API = process.env.ETHER_SCAN_API;
-if (!ETHER_SCAN_API)
-  throw new Error("Please set the MAINNET_RPC_URL environment variable.");
+export const ETHER_SCAN_API = processEnvSafe("ETHER_SCAN_API");
 
 const ABI_CHECK = [
   symbolABI,

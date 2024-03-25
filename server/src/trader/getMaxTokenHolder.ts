@@ -1,4 +1,5 @@
 import axios from "axios";
+import processEnvSafe from "../safeEnv";
 
 export async function getMaxTokenHolder(tokenAddr: string) {
   let res = await axios.get(
@@ -7,7 +8,7 @@ export async function getMaxTokenHolder(tokenAddr: string) {
       "&page=1&limit=1",
     {
       headers: {
-        "x-api-key": process.env.CHAINBASE_API,
+        "x-api-key": processEnvSafe("CHAINBASE_API"),
       },
     }
   );

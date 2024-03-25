@@ -1,5 +1,5 @@
 import fs from "fs";
-import { executeCalls, prepareCall } from "./multicall";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
 
 async function getAllTokens() {
   return fs.readFileSync("../../data/tokenadddress.txt", "utf-8").split("\n");

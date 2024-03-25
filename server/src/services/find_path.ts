@@ -62,11 +62,15 @@ const data = {
   },
 };
 
-async function getReservesFromDb(): Promise<UsableDexes[]> {
-  const v2Pairs = await prisma.pair.findMany();
-  const sushiPairs = await prisma.pairSushiSwap.findMany();
-  const pancakePairs = await prisma.pairPancakeSwap.findMany();
-  const uniswapV3Pairs = await prisma.pairV3.findMany();
+async function getReservesFromDb(chainId: number): Promise<UsableDexes[]> {
+  const v2Pairs = await prisma.pair.findMany({ where: { chainId } });
+  const sushiPairs = await prisma.pairSushiSwap.findMany({
+    where: { chainId },
+  });
+  const pancakePairs = await prisma.pairPancakeSwap.findMany({
+    where: { chainId },
+  });
+  const uniswapV3Pairs = await prisma.pairV3.findMany({ where: { chainId } });
 
   const toRet: UsableDexes[] = [];
 
@@ -83,6 +87,7 @@ async function getReservesFromDb(): Promise<UsableDexes[]> {
         token1Address: e.token1Address.toLowerCase(),
         token1Reserve: BigInt(e.token1Reserve).valueOf(),
         version: ele.name,
+        chainId,
       })
     );
   });
@@ -302,6 +307,7 @@ export async function findPaths(
   inTokenAddress: string,
   outTokenAddress: string,
   inAmt: bigint,
+  chainId: number,
   hops?: number
 ): Promise<{
   [k in Dexes]: string | PathMember[];
@@ -310,7 +316,7 @@ export async function findPaths(
     [key in string]: [string, UsableDexes][];
   } = {};
 
-  const reserves = await getReservesFromDb();
+  const reserves = await getReservesFromDb(chainId);
 
   console.log(`fetched ${reserves.length} rows from db`);
 

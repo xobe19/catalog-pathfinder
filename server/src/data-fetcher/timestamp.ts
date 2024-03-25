@@ -1,5 +1,5 @@
-import path from "path";
 import fs from "fs";
+import path from "path";
 export function updateTimeStamp() {
   const currentTime = new Date();
   const currentOffset = currentTime.getTimezoneOffset();
@@ -7,7 +7,7 @@ export function updateTimeStamp() {
     currentTime.getTime() + (330 + currentOffset) * 60000
   );
   fs.writeFileSync(
-    path.join(__dirname, "../data", "timestamp.txt"),
+    path.join(__dirname, "../../data", "timestamp.txt"),
     ISTTime.toString()
   );
 }

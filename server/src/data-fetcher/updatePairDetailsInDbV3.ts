@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../services/dbClient";
 import { UNISWAP_POOL_ABI } from "./abis";
-import { executeCalls, prepareCallVariable } from "./multicall";
-import { updateTimeStamp } from "../timestamp";
-
-const prisma = new PrismaClient();
+import { executeCalls, prepareCallVariable } from "./ethereumMulticall";
+import { updateTimeStamp } from "./timestamp";
 
 async function getMulticallBatch(
   pairAddresses: string[],

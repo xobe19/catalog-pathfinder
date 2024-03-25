@@ -96,6 +96,7 @@ export interface QuoteBody {
   tokenOutAddress: string;
   userFriendly: boolean;
   amount: string;
+  chainId: number;
   hops?: number;
 }
 

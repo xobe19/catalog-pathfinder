@@ -13,7 +13,7 @@ function subtractFee(amount: bigint, fees: number) {
   return (amount * BigInt(100) - BigInt(fees)) / BigInt(100);
 }
 
-/* TODO: subtract fee from input amt, not output amt */
+/* https://github.com/Uniswap/v3-periphery/blob/697c2474757ea89fec12a4e6db16a574fe259610/contracts/libraries/OracleLibrary.sol#L49 */
 export function getAmountOutV3(
   baseAmount: string,
   tick: number,

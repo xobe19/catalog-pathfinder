@@ -1,116 +1,31 @@
-export const GOERLI_ETH_URL = "https://rpc.ankr.com/eth_goerli";
+export const CHAIN_ID = {
+  ETHEREUM: 1,
+  ARBITRUM: 42161,
+};
 
-export const UniswapV2Factory_ADDRESS =
-  "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+export const CONTRACT = {
+  ETHEREUM: {
+    SUSHISWAP: "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+    UNISWAP_V2: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+    PANCAKESWAP: "0x1097053Fd2ea711dad45caCcc45EfF7548fCB362",
+  },
+  ARBITRUM: {
+    UNISWAP_V2: "0xf1d7cc64fb4452f05c498126312ebe29f30fbcf9",
+    SUSHISWAP: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+    PANCAKESWAP: "0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E",
+  },
+};
+
+export const GOERLI_ETH_URL = "https://rpc.ankr.com/eth_goerli";
 
 /* https://github.com/mds1/multicall/blob/a53ad011e302d8162f185d3393666f912767af5c/examples/typescript/constants.ts */
 
 export const UniswapV3Quoter_ADDRESS =
   "0xb27308f9f90d607463bb33ea1bebb41c27ce5ab6";
+
 export const swapperContractAddress =
   "0xE592427A0AEce92De3Edee1F18E0157C05861564";
-export const UniswapQuoter_ABI = [
-  {
-    inputs: [
-      { internalType: "address", name: "_factory", type: "address" },
-      { internalType: "address", name: "_WETH9", type: "address" },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "WETH9",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "factory",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "bytes", name: "path", type: "bytes" },
-      { internalType: "uint256", name: "amountIn", type: "uint256" },
-    ],
-    name: "quoteExactInput",
-    outputs: [{ internalType: "uint256", name: "amountOut", type: "uint256" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "tokenIn", type: "address" },
-      { internalType: "address", name: "tokenOut", type: "address" },
-      { internalType: "uint24", name: "fee", type: "uint24" },
-      { internalType: "uint256", name: "amountIn", type: "uint256" },
-      { internalType: "uint160", name: "sqrtPriceLimitX96", type: "uint160" },
-    ],
-    name: "quoteExactInputSingle",
-    outputs: [{ internalType: "uint256", name: "amountOut", type: "uint256" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "bytes", name: "path", type: "bytes" },
-      { internalType: "uint256", name: "amountOut", type: "uint256" },
-    ],
-    name: "quoteExactOutput",
-    outputs: [{ internalType: "uint256", name: "amountIn", type: "uint256" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "address", name: "tokenIn", type: "address" },
-      { internalType: "address", name: "tokenOut", type: "address" },
-      { internalType: "uint24", name: "fee", type: "uint24" },
-      { internalType: "uint256", name: "amountOut", type: "uint256" },
-      { internalType: "uint160", name: "sqrtPriceLimitX96", type: "uint160" },
-    ],
-    name: "quoteExactOutputSingle",
-    outputs: [{ internalType: "uint256", name: "amountIn", type: "uint256" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      { internalType: "int256", name: "amount0Delta", type: "int256" },
-      { internalType: "int256", name: "amount1Delta", type: "int256" },
-      { internalType: "bytes", name: "path", type: "bytes" },
-    ],
-    name: "uniswapV3SwapCallback",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-];
 
 export const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
 export const UNISWAP_V2_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-
-export const MULTICALL_ABI_ETHERS = [
-  // https://github.com/mds1/multicall
-  "function aggregate(tuple(address target, bytes callData)[] calls) payable returns (uint256 blockNumber, bytes[] returnData)",
-  "function aggregate3(tuple(address target, bool allowFailure, bytes callData)[] calls) payable returns (tuple(bool success, bytes returnData)[] returnData)",
-  "function aggregate3Value(tuple(address target, bool allowFailure, uint256 value, bytes callData)[] calls) payable returns (tuple(bool success, bytes returnData)[] returnData)",
-  "function blockAndAggregate(tuple(address target, bytes callData)[] calls) payable returns (uint256 blockNumber, bytes32 blockHash, tuple(bool success, bytes returnData)[] returnData)",
-  "function getBasefee() view returns (uint256 basefee)",
-  "function getBlockHash(uint256 blockNumber) view returns (bytes32 blockHash)",
-  "function getBlockNumber() view returns (uint256 blockNumber)",
-  "function getChainId() view returns (uint256 chainid)",
-  "function getCurrentBlockCoinbase() view returns (address coinbase)",
-  "function getCurrentBlockDifficulty() view returns (uint256 difficulty)",
-  "function getCurrentBlockGasLimit() view returns (uint256 gaslimit)",
-  "function getCurrentBlockTimestamp() view returns (uint256 timestamp)",
-  "function getEthBalance(address addr) view returns (uint256 balance)",
-  "function getLastBlockHash() view returns (bytes32 blockHash)",
-  "function tryAggregate(bool requireSuccess, tuple(address target, bytes callData)[] calls) payable returns (tuple(bool success, bytes returnData)[] returnData)",
-  "function tryBlockAndAggregate(bool requireSuccess, tuple(address target, bytes callData)[] calls) payable returns (uint256 blockNumber, bytes32 blockHash, tuple(bool success, bytes returnData)[] returnData)",
-];

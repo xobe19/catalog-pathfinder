@@ -2,10 +2,10 @@ import { Pair } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
-import { CHAIN_ID } from "../constants";
-import { prisma } from "../services/dbClient";
-import { executeCalls, prepareCall } from "./ethereumMulticall";
-import { updateTimeStamp } from "./timestamp";
+import { CHAIN_ID } from "../../../constants";
+import { prisma } from "../../../services/dbClient";
+import { executeCalls, prepareCall } from "../../arbitrumMulticall";
+import { updateTimeStamp } from "../../timestamp";
 
 type ResultWithMetadata = {
   results: Result[];
@@ -77,7 +77,7 @@ function getPairDetailsFromExecuteCallsResult(
       token1Address,
       token0Reserve: reserves[0].toString(),
       token1Reserve: reserves[1].toString(),
-      chainId: CHAIN_ID.ETHEREUM,
+      chainId: CHAIN_ID.ARBITRUM,
     };
     ret.push(pair);
   }
@@ -108,13 +108,16 @@ async function main() {
   console.time("service time");
 
   // clear the db first
-  await prisma.pair.deleteMany({});
+  await prisma.pairSushiSwap.deleteMany({
+    where: { chainId: CHAIN_ID.ARBITRUM },
+  });
   console.log("db cleared");
 
   const pairAddressesFilePath = path.join(
     __dirname,
-    "../../data",
-    "uniswap_v2_pair_addresses.csv"
+    "../../../../",
+    "data",
+    "sushiswap_arbitrum_pair_addresses.txt"
   );
 
   try {

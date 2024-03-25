@@ -1,0 +1,14 @@
+-- AlterTable
+ALTER TABLE "Pair" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "PairPancakeSwap" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "PairSushiSwap" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "PairV3" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "Token" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 1;

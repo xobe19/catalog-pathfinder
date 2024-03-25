@@ -1,11 +1,11 @@
-import { Pair, PairPancakeSwap, PrismaClient } from "@prisma/client";
+import { Pair, PairPancakeSwap } from "@prisma/client";
 import { Result } from "ethers";
 import fs from "fs";
 import path from "path";
-import { updateTimeStamp } from "../timestamp";
-import { executeCalls, prepareCall } from "./multicall";
-
-const prisma = new PrismaClient();
+import { CHAIN_ID } from "../constants";
+import { prisma } from "../services/dbClient";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
+import { updateTimeStamp } from "./timestamp";
 
 type ResultWithMetadata = {
   results: Result[];
@@ -78,6 +78,7 @@ function getPairDetailsFromExecuteCallsResult(
       token1Address,
       token0Reserve: reserves[0].toString(),
       token1Reserve: reserves[1].toString(),
+      chainId: CHAIN_ID.ETHEREUM,
     };
     console.log(pair);
     ret.push(pair);

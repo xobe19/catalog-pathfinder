@@ -1,14 +1,14 @@
-import { ethers } from "ethers";
-import { UniswapQuoter_ABI, UniswapV3Quoter_ADDRESS } from "../constants";
-import { Quotercontract, provider } from "../rpc_setup";
-
 import dotenv from "dotenv";
-import { ModifiedPairV3, decodeFunction } from "../types";
+import { CHAIN_ID, UniswapV3Quoter_ADDRESS } from "../constants";
 import {
-  executeCalls,
-  multicall,
-  prepareCall,
-} from "../data-fetcher/multicall";
+  executeCalls as executeCallsE,
+  prepareCall as prepareCallE,
+} from "../data-fetcher/ethereumMulticall";
+import {
+  executeCalls as executeCallsA,
+  prepareCall as prepareCallA,
+} from "../data-fetcher/arbitrumMulticall";
+import { decodeFunction } from "../types";
 
 dotenv.config();
 
@@ -18,8 +18,14 @@ export async function getQuoteV3(
     out: string;
     in: string;
     qty: string;
-  }[]
+  }[],
+  chainId: number
 ): Promise<bigint[]> {
+  const prepareCall =
+    chainId == CHAIN_ID.ARBITRUM ? prepareCallA : prepareCallE;
+  const executeCalls =
+    chainId == CHAIN_ID.ARBITRUM ? executeCallsA : executeCallsE;
+
   let calls = [];
   for (let pend of pending_multicall) {
     calls.push(
@@ -43,14 +49,17 @@ export async function getQuoteV3(
 
 (async function () {
   console.log(
-    await getQuoteV3([
-      {
-        in: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        out: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        qty: "1000000000",
-        fees: 3000,
-      },
-    ])
+    await getQuoteV3(
+      [
+        {
+          in: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          out: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          qty: "1000000000",
+          fees: 3000,
+        },
+      ],
+      CHAIN_ID.ETHEREUM
+    )
   );
 })();
 

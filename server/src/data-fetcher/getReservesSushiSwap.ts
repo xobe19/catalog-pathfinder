@@ -1,5 +1,5 @@
-import { executeCalls, prepareCall } from "./multicall";
 import fs from "fs";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
 
 async function getReserves() {
   const allpairs = fs.readFileSync("sushiswapPairs.txt").toString().split("\n");

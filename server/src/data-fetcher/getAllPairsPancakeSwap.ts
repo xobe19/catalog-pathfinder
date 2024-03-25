@@ -1,10 +1,11 @@
 import fs from "fs";
-import { executeCalls, prepareCall } from "./multicall";
+import { CONTRACT } from "../constants";
+import { executeCalls, prepareCall } from "./ethereumMulticall";
 
 async function main(batchSize: number) {
   const getPairLengthCall = [
     prepareCall(
-      "0x1097053Fd2ea711dad45caCcc45EfF7548fCB362",
+      CONTRACT.ETHEREUM.PANCAKESWAP,
       "allPairsLength",
       "function allPairsLength() external view returns (uint)"
     ),
@@ -16,7 +17,7 @@ async function main(batchSize: number) {
   for (let i = 0; i < parseInt(length); i++) {
     calls.push(
       prepareCall(
-        "0x1097053Fd2ea711dad45caCcc45EfF7548fCB362",
+        CONTRACT.ETHEREUM.PANCAKESWAP,
         "allPairs",
         "function allPairs(uint) external view returns (address pair)",
         [i]

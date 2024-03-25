@@ -1,12 +1,13 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
 import { UNISWAP_V2_ROUTER, swapperContractAddress } from "../constants";
+import processEnvSafe from "../safeEnv";
 import { tenderlyTxObj } from "../types";
 import { CalldataGenerator } from "./calldataGenerator";
 import { getMaxTokenHolder } from "./getMaxTokenHolder";
-
 dotenv.config();
-const TENDERLY_ACCESS_KEY = process.env.TENDERLY_API;
+
+const TENDERLY_ACCESS_KEY = processEnvSafe("TENDERLY_API");
 
 export class Simulator {
   static executeBatch = async (
