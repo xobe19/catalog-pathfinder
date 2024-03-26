@@ -129,3 +129,11 @@ export interface Call3 {
   allowFailure: boolean;
   callData: string;
 }
+
+export interface CallDataV3MultiSwap {
+  path: string;
+  recipient: string;
+  deadline: number;
+  amountIn: string;
+  amountOutMinimum: number;
+}

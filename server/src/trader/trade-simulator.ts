@@ -1,8 +1,9 @@
 import axios from "axios";
 import * as dotenv from "dotenv";
-import { UNISWAP_V2_ROUTER } from "../constants";
+import { UNISWAP_V2_ROUTER, swapperContractAddress } from "../constants";
 import { tenderlyTxObj } from "../types";
 import { CalldataGenerator } from "./calldataGenerator";
+import { getMaxTokenHolder } from "./getMaxTokenHolder";
 
 dotenv.config();
 const TENDERLY_ACCESS_KEY = process.env.TENDERLY_API;
@@ -14,26 +15,28 @@ export class Simulator {
     block_number?: number
   ) => {
     try {
-      const res = (
-        await axios.post(
-          `https://api.tenderly.co/api/v1/account/hiteshlwni/project/project/simulate-bundle`,
-          {
-            simulations: transactions.map((singleTx) => ({
-              network_id: "1",
-              save: true,
-              save_if_fails: true,
-              simulation_type: "full",
-              block_number: block_number,
-              ...singleTx,
-            })),
-          },
-          {
-            headers: {
-              "X-Access-Key": TENDERLY_ACCESS_KEY as string,
+      const res =
+        // https://api.tenderly.co/api/v1/account/vikasrushi/project/project/
+        (
+          await axios.post(
+            `https://api.tenderly.co/api/v1/account/hiteshlwni/project/project/simulate-bundle`,
+            {
+              simulations: transactions.map((singleTx) => ({
+                network_id: "1",
+                save: true,
+                save_if_fails: true,
+                simulation_type: "full",
+                block_number: block_number,
+                ...singleTx,
+              })),
             },
-          }
-        )
-      ).data;
+            {
+              headers: {
+                "X-Access-Key": TENDERLY_ACCESS_KEY as string,
+              },
+            }
+          )
+        ).data;
 
       let stack_trace =
         res.simulation_results[1].transaction.transaction_info.stack_trace;
@@ -129,4 +132,82 @@ export class Simulator {
 
     await this.executeBatch(calls, path);
   };
+
+  static async getTxObj() {
+    const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    const SEED = "0x5eed99d066a8caf10f3e4327c1b3d8b673485eed";
+
+    const walletAddress = await getMaxTokenHolder(USDC);
+    const path = [USDC, WETH, SEED];
+    const transactionData = CalldataGenerator.approveTokens(
+      path[0],
+      swapperContractAddress,
+      BigInt("8000000000"),
+      walletAddress
+    );
+    const calls = [];
+    calls.push(transactionData?.txObj);
+
+    const callData = CalldataGenerator.generateV3(
+      [USDC, WETH, SEED],
+      [100, 3000],
+      walletAddress,
+      "4000000000"
+    );
+
+    const txObjSwap = {
+      to: swapperContractAddress,
+      from: walletAddress,
+      data: callData,
+    };
+    calls.push(txObjSwap);
+    return calls;
+  }
+  public static testSeed = async () => {
+    console.time("Batch Simulation");
+    const txArr = await this.getTxObj();
+    const tx1 = txArr[0];
+    const tx2 = txArr[1];
+    console.log(tx2);
+    (
+      await axios.post(
+        `https://api.tenderly.co/api/v1/account/hiteshlwni/project/project/simulate-bundle`,
+        {
+          simulations: [
+            {
+              network_id: "1",
+              save: true,
+              save_if_fails: true,
+              simulation_type: "full",
+              to: tx1?.to,
+              from: tx1?.from,
+              input: tx1?.data,
+              state_objects: {},
+            },
+            {
+              network_id: "1",
+              save: true,
+              save_if_fails: true,
+              simulation_type: "full",
+              to: tx2?.to,
+              from: tx2?.from,
+              input: tx2?.data,
+              state_objects: {},
+            },
+          ],
+        },
+        {
+          headers: {
+            "X-Access-Key": TENDERLY_ACCESS_KEY as string,
+          },
+        }
+      )
+    ).data;
+    console.timeEnd("Batch Simulation");
+  };
 }
+
+Simulator.testSeed().then((e) => {
+  console.log(e);
+});

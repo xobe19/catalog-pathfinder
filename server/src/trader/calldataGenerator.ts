@@ -1,8 +1,17 @@
 import { Contract } from "ethers";
 import { provider } from "../rpc_setup";
-import { UNISWAP_V2_ROUTER } from "../constants";
-import { approveERC20Abi, swapABI } from "../data-fetcher/abis";
-import { swapExactTokensForTokensArgs, transactionObj } from "../types";
+import { UNISWAP_V2_ROUTER, swapperContractAddress } from "../constants";
+import {
+  UNISWAP_SWAP_ABI,
+  approveERC20Abi,
+  swapABI,
+} from "../data-fetcher/abis";
+import {
+  CallDataV3MultiSwap,
+  swapExactTokensForTokensArgs,
+  transactionObj,
+} from "../types";
+import { encodeRouteToPath } from "@uniswap/v3-sdk";
 
 export class CalldataGenerator {
   /**
@@ -90,5 +99,54 @@ export class CalldataGenerator {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  static encodePathV3(path: string[], fees: number[]): string {
+    if (path.length != fees.length + 1) {
+      throw new Error("path/fee lengths do not match");
+    }
+    const FEE_SIZE = 3;
+    let encoded = "0x";
+    for (let i = 0; i < fees.length; i++) {
+      encoded += path[i].slice(2);
+      // ! 3 byte encoding of the fee
+      encoded += fees[i].toString(16).padStart(2 * FEE_SIZE, "0");
+    }
+    encoded += path[path.length - 1].slice(2);
+    return encoded.toLowerCase();
+  }
+
+  // path: abi.encodePacked(DAI, poolFee, USDC, poolFee, WETH9),
+  // recipient: msg.sender,
+  // deadline: block.timestamp,
+  // amountIn: amountIn,
+  // amountOutMinimum: 0
+  static generateV3(
+    path: string[],
+    fees: number[],
+    walletAddress: string,
+    amountIn: string,
+    amountOutMinimum?: number
+  ) {
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+    const params: CallDataV3MultiSwap = {
+      path: this.encodePathV3(path, fees),
+      recipient: walletAddress,
+      deadline: deadline,
+      amountIn: amountIn,
+      amountOutMinimum: amountOutMinimum ? amountOutMinimum : 0,
+    };
+
+    const ContractInstance = new Contract(
+      swapperContractAddress,
+      UNISWAP_SWAP_ABI,
+      provider
+    );
+
+    const callData = ContractInstance.interface.encodeFunctionData(
+      "exactInput",
+      [params]
+    );
+    return callData;
   }
 }

@@ -7,7 +7,8 @@ export const UniswapV2Factory_ADDRESS =
 
 export const UniswapV3Quoter_ADDRESS =
   "0xb27308f9f90d607463bb33ea1bebb41c27ce5ab6";
-
+export const swapperContractAddress =
+  "0xE592427A0AEce92De3Edee1F18E0157C05861564";
 export const UniswapQuoter_ABI = [
   {
     inputs: [
