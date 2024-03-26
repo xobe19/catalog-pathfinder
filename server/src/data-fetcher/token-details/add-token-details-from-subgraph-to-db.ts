@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { CHAIN_ID } from "../../constants";
 import { prisma } from "../../services/dbClient";
 import tokenData from "./subgraph-token-data.json";
 
@@ -13,7 +14,13 @@ async function main() {
     const { id, symbol, name, decimals } = token;
     try {
       const updated = await prisma.token.update({
-        where: { id: id.toLowerCase() },
+        where: {
+          id: id.toLowerCase(),
+          id_chainId: {
+            id: id.toLowerCase(),
+            chainId: CHAIN_ID.ETHEREUM,
+          },
+        },
         data: {
           symbol,
           name,
@@ -32,6 +39,7 @@ async function main() {
               symbol,
               name,
               decimals: parseInt(decimals, 10),
+              chainId: CHAIN_ID.ETHEREUM,
             },
           });
           console.log(`Added new token ${id} to db`);

@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "Pair" ALTER COLUMN "chainId" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "PairSushiSwap" ALTER COLUMN "chainId" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "PairV3" ALTER COLUMN "chainId" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "Token" ALTER COLUMN "chainId" DROP DEFAULT;

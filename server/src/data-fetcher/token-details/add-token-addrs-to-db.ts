@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { CHAIN_ID } from "../../constants";
 import { prisma } from "../../services/dbClient";
 
 async function main() {
@@ -12,6 +13,7 @@ async function main() {
     await prisma.token.createMany({
       data: addresses.map((a) => ({
         id: a,
+        chainId: CHAIN_ID.ETHEREUM,
       })),
     });
     console.log(`inserted all token addresses`);

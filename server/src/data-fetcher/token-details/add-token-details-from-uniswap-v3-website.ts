@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
+import { CHAIN_ID } from "../../constants";
 import { prisma } from "../../services/dbClient";
-
 import tokenData from "./uniswap-v3-website.json";
 
 async function main() {
@@ -12,7 +12,9 @@ async function main() {
     const { id, symbol, name, decimals } = token;
     try {
       const updated = await prisma.token.update({
-        where: { id: id.toLowerCase() },
+        where: {
+          id_chainId: { id: id.toLowerCase(), chainId: CHAIN_ID.ETHEREUM },
+        },
         data: {
           symbol,
           name,
@@ -28,6 +30,7 @@ async function main() {
           await prisma.token.create({
             data: {
               id: id.toLowerCase(),
+              chainId: CHAIN_ID.ETHEREUM,
               symbol,
               name,
             },

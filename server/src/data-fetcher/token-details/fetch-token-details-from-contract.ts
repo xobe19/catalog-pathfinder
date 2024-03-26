@@ -175,7 +175,9 @@ async function main() {
         for (const token of tokens) {
           try {
             await prisma.token.update({
-              where: { id: token.id },
+              where: {
+                id_chainId: { id: token.id, chainId: CHAIN_ID.ETHEREUM },
+              },
               data: {
                 name: token.name,
                 symbol: token.symbol,

@@ -8,14 +8,7 @@ import {
   UsableDexes,
 } from "../types";
 import { prisma } from "./dbClient";
-import { getAmountOutV3 } from "./getAmountV3";
 import { getQuoteV3 } from "./getQuoteV3";
-
-let safeTokens = new Set<string>(
-  tokensJson["tokens"]
-    .filter((e) => e.chainId === 1)
-    .map((e) => e.address.toLowerCase())
-);
 
 function disp(
   addr: Set<String>,
@@ -141,7 +134,8 @@ export async function findPath(
   graph: {
     [key in string]: [string, UsableDexes][];
   },
-  tokensToExclude: Set<string>,
+  safeTokens: Set<string>,
+  chainId: number,
   hops: number = 3,
   dexes: Set<Dexes>
 ): Promise<string | PathMember[]> {
@@ -201,7 +195,6 @@ export async function findPath(
       for (let [neighbour, p] of graph[addr]) {
         if (qd.path.has(neighbour)) continue;
         if (!dexes.has(p.version)) continue;
-        if (tokensToExclude.has(neighbour)) continue;
         if (!safeTokens.has(neighbour) && neighbour !== outTokenAddress)
           continue;
 
@@ -257,7 +250,7 @@ export async function findPath(
       }
     }
 
-    let new_quantities = await getQuoteV3(pending_multicall);
+    let new_quantities = await getQuoteV3(pending_multicall, chainId);
 
     for (let i = 0; i < new_quantities.length; i++) {
       let new_qty = new_quantities[i];
@@ -329,14 +322,20 @@ export async function findPaths(
     graph[token1].push([token0, pair]);
   }
 
-  let exclude = new Set<string>();
+  const safeTokens = new Set<string>(
+    tokensJson["tokens"]
+      .filter((e) => e.chainId === chainId)
+      .map((e) => e.address.toLowerCase())
+  );
+
   let boundFunction = findPath.bind(
     null,
     inTokenAddress,
     outTokenAddress,
     inAmt,
     graph,
-    exclude,
+    safeTokens,
+    chainId,
     hops
   );
   let a = new Set<Dexes>();

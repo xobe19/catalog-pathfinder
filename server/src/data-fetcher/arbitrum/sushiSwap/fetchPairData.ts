@@ -142,7 +142,7 @@ async function main() {
 
       if (size === pairAddresses.length - i || resCount === promiseBatchSize) {
         const results = await Promise.all(promiseBatch);
-        await prisma.pair.createMany({
+        await prisma.pairSushiSwap.createMany({
           data: toDbPairs(pairAddresses, results),
         });
         console.log(`rows in db: ${i + size}`);
