@@ -25,6 +25,7 @@ export function prepareCall(
   args?: any[]
 ) {
   const functionInterface = new Interface([interfaceAbi]);
+
   const call: Call3 = {
     target: contractAddress,
     allowFailure: true,
