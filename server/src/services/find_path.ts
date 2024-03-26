@@ -177,6 +177,12 @@ export async function findPath(
       };
     } = {};
 
+    let pending_multicall = [];
+    let pending_paths = [];
+    let pending_intermediates = [];
+    let pending_token_from_pool = [];
+    let pending_pairs = [];
+
     for (let addr in queue) {
       new_queue[addr] = {
         path: new Set(queue[addr].path),
@@ -207,12 +213,16 @@ export async function findPath(
           new_qty = getOutV2(q1.valueOf(), q2.valueOf(), qd.qty);
         } else {
           const typedP = p as ModifiedPairV3;
-          new_qty = await getQuoteV3(
-            addr,
-            neighbour,
-            typedP.fees,
-            qd.qty.toString()
-          );
+          pending_multicall.push({
+            fees: typedP.fees,
+            out: neighbour,
+            in: addr,
+            qty: qd.qty.toString(),
+          });
+          pending_paths.push(qd.path);
+          pending_intermediates.push(qd.intermediate_path);
+          pending_token_from_pool.push(qd.token_from_pool);
+          pending_pairs.push(p);
         }
 
         if (!new_qty) continue;
@@ -241,6 +251,39 @@ export async function findPath(
         }
       }
     }
+
+    let new_quantities = await getQuoteV3(pending_multicall);
+
+    for (let i = 0; i < new_quantities.length; i++) {
+      let new_qty = new_quantities[i];
+      let neighbour = pending_multicall[i].out;
+      if (!new_qty) continue;
+      if (
+        new_queue[neighbour] === undefined ||
+        new_queue[neighbour].qty < new_qty
+      ) {
+        let new_path = new Set(pending_paths[i]);
+        let new_intermediate_path = new Set(pending_intermediates[i]);
+        let new_token_from_pool = [...pending_token_from_pool[i]];
+        let p = pending_pairs[i];
+        new_path.add(neighbour);
+        new_intermediate_path.add({
+          amount: new_qty,
+          poolAddress: p.address,
+          fees: p.version !== "Uniswap V3" ? 3000 : (p as ModifiedPairV3).fees,
+        });
+
+        new_token_from_pool.push(p.version);
+
+        new_queue[neighbour] = {
+          path: new_path,
+          qty: new_qty,
+          intermediate_path: new_intermediate_path,
+          token_from_pool: new_token_from_pool,
+        };
+      }
+    }
+
     queue = new_queue;
   }
 
