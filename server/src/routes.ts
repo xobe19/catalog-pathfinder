@@ -60,7 +60,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
 
     const many = await prisma.token.findMany({
       where: {
-        id: { in: [tokenInAddress, tokenOutAddress] },
+        AND: [{ id: { in: [tokenInAddress, tokenOutAddress] } }, { chainId }],
       },
     });
     const tokenIn = many.find((tok) => tok.id === tokenInAddress)!;
@@ -105,7 +105,7 @@ router.post("/quote", async (req: Request<any, any, QuoteBody>, res) => {
 
     const tokens = await prisma.token.findMany({
       where: {
-        id: { in: Array.from<string>(uniqueTokens) },
+        AND: [{ id: { in: Array.from<string>(uniqueTokens) } }, { chainId }],
       },
     });
     const tokenMap = new Map<string, Token>();
